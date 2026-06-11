@@ -9,12 +9,12 @@ const productSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: [true,'Product Description is required!'],
+        required: [true, 'Product Description is required!'],
         trim: true
     },
     image: {
         type: String,
-        required: [true,'Product Image is required!']
+        required: [true, 'Product Image is required!']
     },
     price: {
         type: Number,
@@ -48,4 +48,6 @@ const productSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-export const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema);
+
+export default Product;
