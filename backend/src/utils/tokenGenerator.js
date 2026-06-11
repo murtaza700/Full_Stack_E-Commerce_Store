@@ -8,7 +8,7 @@ const tokenGenerator = (data) => {
     jwt.sign(
         { data },
         JWT_SECRET,
-        { TOKEN_EXPIRY_AT }
+        { expiresIn: TOKEN_EXPIRY_AT }
     );
 }
 
