@@ -13,8 +13,14 @@ const productSchema = new mongoose.Schema({
         trim: true
     },
     image: {
-        type: String,
-        required: [true, 'Product Image is required!']
+        url: {
+            type: String,
+            required: [true, 'Product Image URL is required!']
+        },
+        fileId: {
+            type: String,
+            required: [true, 'Product Image File ID is required!']
+        }
     },
     price: {
         type: Number,
@@ -45,6 +51,11 @@ const productSchema = new mongoose.Schema({
     sku: {
         type: String,
         trim: true
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 }, { timestamps: true });
 

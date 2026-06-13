@@ -5,8 +5,8 @@ const tokenGenerator = (data) => {
     const JWT_SECRET = process.env.JWT_SECRET;
     const TOKEN_EXPIRY_AT = process.env.TOKEN_EXPIRY_AT;
 
-    jwt.sign(
-        { data },
+    return jwt.sign(
+        data,
         JWT_SECRET,
         { expiresIn: TOKEN_EXPIRY_AT }
     );
