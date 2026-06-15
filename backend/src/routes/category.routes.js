@@ -7,5 +7,6 @@ import roleChecker from '../middlewares/roleChecker.middleware.js';
 const router = express.Router();
 
 router.post('/', authMiddleware, roleChecker, categoryController.createCategory);
+router.delete('/:id', authMiddleware, roleChecker, categoryController.deleteCategory);
 
 export default router;
