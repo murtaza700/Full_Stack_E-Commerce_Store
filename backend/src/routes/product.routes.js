@@ -18,6 +18,7 @@ router.delete('/:id', authMiddleware, roleChecker, productController.deleteProdu
 
 /* Public Routes */
 router.get('/', productController.getAllProducts);
+router.get('/search', productController.searchAndFilterProducts);
 router.get('/:id', productController.getSingleProduct);
 router.get('/category/:category', productController.getProductsByCategory);
 
