@@ -8,5 +8,9 @@ const router = express.Router();
 
 router.post('/', authMiddleware, roleChecker, categoryController.createCategory);
 router.delete('/:id', authMiddleware, roleChecker, categoryController.deleteCategory);
+router.patch('/:id', authMiddleware, roleChecker, categoryController.updateCategory);
+
+/* Public Route */
+router.get('/', categoryController.getAllCategories);
 
 export default router;

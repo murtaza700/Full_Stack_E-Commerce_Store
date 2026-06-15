@@ -83,3 +83,80 @@ export const deleteCategory = async (req, res) => {
         });
     }
 }
+
+export const updateCategory = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { name, isActive } = req.body;
+
+        const category = await Category.findById(id);
+
+        if (!category) {
+            return res.status(404).json({
+                success: false,
+                message: 'Category Not Found!'
+            });
+        }
+
+        let updatedCategoryData = { ...req.body };
+
+        if (name && name.toLowerCase() !== category.name.toLowerCase()) {
+            const duplicateCheck = await Category.findOne({
+                _id: { $ne: id },
+                name: { $regex: `^${name}$`, $options: 'i' }
+            });
+
+            if (duplicateCheck) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'A category with this name already exists!'
+                });
+            }
+        }
+
+        const updatedCategory = await Category.findByIdAndUpdate(
+            id,
+            updatedCategoryData,
+            { returnDocument: 'after', runValidators: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: 'Category Updated!',
+            category: updatedCategory
+        });
+
+    } catch (err) {
+        console.error(`Category Updation Error! ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error!'
+        });
+    }
+}
+
+export const getAllCategories = async (req, res) => {
+    try {
+        const categories = await Category.find().select('-createdBy');
+
+        if (categories.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Categories not found!'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Categories fetched!',
+            categories
+        });
+
+    } catch (err) {
+        console.error(`Get All Categories Error! ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error!'
+        });
+    }
+}
