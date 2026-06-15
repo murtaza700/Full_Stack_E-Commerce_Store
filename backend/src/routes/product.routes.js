@@ -11,15 +11,18 @@ const upload = multer({
     storage: memoryStorage()
 });
 
-/* Admin Routes */
+/* Admin Ruoutes */
 router.post('/', authMiddleware, roleChecker, upload.single('image'), productController.createProduct);
 router.patch('/:id', authMiddleware, roleChecker, upload.single('image'), productController.updateProduct);
 router.delete('/:id', authMiddleware, roleChecker, productController.deleteProduct);
 
-/* Public Routes */
+/* User Protected Routes */
+router.post('/:id/reviews', authMiddleware, productController.createProductReview);
+
+/* Public Route */
 router.get('/', productController.getAllProducts);
 router.get('/search', productController.searchAndFilterProducts);
-router.get('/:id', productController.getSingleProduct);
 router.get('/category/:category', productController.getProductsByCategory);
+router.get('/:id', productController.getSingleProduct);
 
 export default router;

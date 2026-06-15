@@ -7,7 +7,7 @@ import imageDelete from '../utils/imageDelete.js';
 
 export const createProduct = async (req, res) => {
     try {
-        const { title, description, price, category, stock, outOfStock, ratings, sku, createdBy } = req.body;
+        const { title, description, price, category, stock, outOfStock, sku, createdBy } = req.body;
         const file = req.file;
 
         if (!title || !description || !price || !category || !stock) {
@@ -34,7 +34,6 @@ export const createProduct = async (req, res) => {
             category,
             stock,
             outOfStock,
-            ratings,
             sku,
             createdBy
         });
@@ -48,6 +47,7 @@ export const createProduct = async (req, res) => {
         });
 
     } catch (err) {
+        console.error(`Create Product Error: ${err}`);
         return res.status(500).json({
             success: false,
             message: 'Server Error!!!'
@@ -235,7 +235,7 @@ export const getProductsByCategory = async (req, res) => {
 
         const queryFilter = { category: req.params.category };
 
-        const totalProducts = await Product.countDocuments();
+        const totalProducts = await Product.countDocuments(queryFilter);
 
         const products = await Product.find(queryFilter)
             .populate('category', '-_id -createdAt -updatedAt -createdBy')
@@ -313,9 +313,10 @@ export const searchAndFilterProducts = async (req, res) => {
             queryObject.ratings = { $gte: Number(ratings) }
         }
 
-        const totalProducts = await Product.countDocuments();
+        const totalProducts = await Product.countDocuments(queryObject);
 
-        const products = await Product.find(queryObject).populate('category', '-_id -createdBy -updateAt -createdAt')
+        const products = await Product.find(queryObject)
+            .populate('category', '-_id -createdBy -updatedAt -createdAt')
             .sort(sortOption)
             .skip(skip)
             .limit(limitNumber);
@@ -348,3 +349,61 @@ export const searchAndFilterProducts = async (req, res) => {
         });
     }
 }
+
+export const createProductReview = async (req, res) => {
+    try {
+        const { rating, comment } = req.body;
+        const productId = req.params.id;
+
+        const userId = req.user._id;
+        const userName = req.user.name || "Anonymous User";
+
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found!'
+            });
+        }
+
+        const alreadyReviewed = product.reviews.find(
+            (rev) => rev.user.toString() === userId.toString()
+        );
+
+        if (alreadyReviewed) {
+            alreadyReviewed.rating = Number(rating);
+            alreadyReviewed.comment = comment;
+            alreadyReviewed.name = userName;
+        } else {
+            const review = {
+                user: userId,
+                name: userName,
+                rating: Number(rating),
+                comment
+            };
+            product.reviews.push(review);
+        }
+
+        product.numReviews = product.reviews.length;
+
+        const totalRatingSum = product.reviews.reduce((acc, item) => item.rating + acc, 0);
+        product.ratings = (totalRatingSum / product.reviews.length).toFixed(1);
+
+        await product.save();
+
+        return res.status(200).json({
+            success: true,
+            message: alreadyReviewed ? 'Review updated!' : 'Review added!',
+            ratings: product.ratings,
+            numReviews: product.numReviews
+        });
+
+    } catch (err) {
+        console.error(`Review Error: ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error!'
+        });
+    }
+};

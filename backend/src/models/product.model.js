@@ -45,9 +45,38 @@ const productSchema = new mongoose.Schema({
     },
     ratings: {
         type: Number,
-        enum: [0, 1, 2, 3, 4, 5],
+        min: [0, 'Rating cannot be less than 0'],
+        max: [5, 'Rating cannot be more than 5'],
         default: 0
     },
+    numReviews: {
+        type: Number,
+        default: 0
+    },
+    reviews: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
+            name: {
+                type: String,
+                required: true
+            },
+            rating: {
+                type: Number,
+                required: [true, 'Please add a rating between 1 and 5'],
+                min: 1,
+                max: 5
+            },
+            comment: {
+                type: String,
+                required: [true, 'Please add a comment'],
+                trim: true
+            }
+        }
+    ],
     sku: {
         type: String,
         trim: true
