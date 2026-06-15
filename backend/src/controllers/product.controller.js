@@ -1,14 +1,14 @@
-import ImageKit, { ImageKitError } from '@imagekit/nodejs';
+import ImageKit from '@imagekit/nodejs';
 
 import Product from '../models/product.model.js';
 import Category from '../models/category.model.js';
 import imageUploader from '../utils/imageUploader.js';
+import imageDelete from '../utils/imageDelete.js';
 
 export const createProduct = async (req, res) => {
     try {
         const { title, description, price, category, stock, outOfStock, ratings, sku, createdBy } = req.body;
         const file = req.file;
-        console.log('BODY!!!', req.body);
 
         if (!title || !description || !price || !category || !stock) {
             return res.status(401).json({
@@ -78,11 +78,8 @@ export const updateProduct = async (req, res) => {
                 fileId: result.fileId
             };
 
-            if (oldProduct.image && oldProduct.image.fileId) {
-                const imagekit = ImageKit();
-                imagekit.deleteFile(oldProduct.image.fileId)
-                    .then(console.log('Image Deleted!'))
-                    .catch(err => console.log(err));
+            if (oldProduct.image && typeof oldProduct.image === 'object' && oldProduct.image.fileId) {
+                imageDelete(oldProduct.image.fileId);
             }
 
         }
