@@ -7,9 +7,13 @@ const imagekit = new ImageKit({
 });
 
 const imageDelete = async (fileId) => {
-    imagekit.files.delete(fileId)
-        .then(() => console.log(`ImageKit Image Deleted!`))
-        .catch((err) => console.error(`ImageKit Image Deletion Error! ${err}`));
+    try {
+        imagekit.files.delete(fileId);
+        console.log(console.log(`ImageKit Image Deleted!`));
+
+    } catch (err) {
+        console.error(`ImageKit Image Deletion Error! ${err}`);
+    }
 }
 
 export default imageDelete;
