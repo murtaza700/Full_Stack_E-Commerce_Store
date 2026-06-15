@@ -117,6 +117,39 @@ export const updateProduct = async (req, res) => {
     }
 }
 
+export const deleteProduct = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const product = await Product.findById(id);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product Not found!'
+            });
+        }
+
+        if (product.image && product.image.fileId) {
+            imageDelete(product.image.fileId);
+        }
+
+        await Product.findByIdAndDelete(id);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Product Deleted!'
+        });
+
+    } catch (err) {
+        console.error(`Product Delete Error!: ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error!'
+        });
+    }
+}
+
 export const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find().populate('category', '-_id -createdBy -createdAt -updatedAt');
