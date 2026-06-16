@@ -82,7 +82,7 @@ export const getMyAllOrders = async (req, res) => {
             .sort('-createdAt');
 
         if (!orders || orders.length === 0) {
-            return res.status(404).json({
+            return res.status(200).json({
                 success: false,
                 message: 'You have not placed any orders yet.',
                 orders: []
@@ -98,6 +98,51 @@ export const getMyAllOrders = async (req, res) => {
 
     } catch (err) {
         console.error(`Get My Orders Error! ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Server Error!'
+        });
+    }
+}
+
+export const getMySingleOrder = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id)
+            .populate({
+                path: 'orderItems.item',
+                select: 'title price image'
+            });
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found!'
+            });
+        }
+
+        if (order.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to view this order!'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Order found!',
+            order
+        });
+
+    } catch (err) {
+        console.error(`Get My Single Order Error! ${err}`);
+
+        if (err.kind === 'ObjectId') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid Order ID format!'
+            });
+        }
+
         return res.status(500).json({
             success: false,
             message: 'Server Error!'
