@@ -1,62 +1,60 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Eye, EyeOff, Lock, Mail, UserRound } from 'lucide-react'
-import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { useDispatch, useSelector } from 'react-redux'
+import { clearError, clearMessage, signupUser } from '../redux/slices/authSlice'
 
 const Signup = () => {
-    const BASE_API = import.meta.env.VITE_BASE_API;
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [showPass, setShowPass] = useState(false);
-    const [loading, setLoading] = useState(false);
+
+    const { error, message, isAuthenticated, loading } = useSelector((state) => state.auth);
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const loginSubmit = async (data, e) => {
-        if (e) e.preventDefault();
-        setLoading(true);
+    const signupSubmit = async (data) => {
+        dispatch(signupUser(data));
+    }
 
-        try {
-            const response = await axios.post(
-                `${BASE_API}/auth/signup`,
-                data,
-                { withCredentials: true }
-            );
-
-            if (response.data.success) {
-                toast.success(response.data.message || 'Welcome back to Scentsô!', {
-                    style: {
-                        fontFamily: 'Poppins',
-                        fontSize: '13px',
-                        borderRadius: '8px',
-                        background: '#111111',
-                        color: '#ffffff',
-                    },
-                    iconTheme: {
-                        primary: '#D4AF37',
-                        secondary: '#111111',
-                    },
-                });
-
-                setTimeout(() => {
-                    navigate('/');
-                }, 2500);
-            }
-        } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.message || 'Invalid credentials. Please try again.', {
+    useEffect(() => {
+        if (error) {
+            toast.error(error || 'Invalid credentials. Please try again.', {
                 style: {
                     fontFamily: 'Poppins',
                     fontSize: '13px',
                     borderRadius: '8px',
                 }
             });
-        } finally {
-            setLoading(false);
+            dispatch(clearError());
         }
-    }
+
+        if (message && isAuthenticated) {
+            toast.success(message || 'Welcome back to Scentsô!', {
+                style: {
+                    fontFamily: 'Poppins',
+                    fontSize: '13px',
+                    borderRadius: '8px',
+                    background: '#111111',
+                    color: '#ffffff',
+                },
+                iconTheme: {
+                    primary: '#D4AF37',
+                    secondary: '#111111',
+                },
+            }
+            );
+            dispatch(clearMessage());
+
+            setTimeout(() => {
+                navigate('/');
+            }, 2500);
+        }
+
+    }, [error, message, dispatch, isAuthenticated, navigate]);
 
     return (
         <div className='flex items-center justify-center min-h-screen bg-CARD-BG px-4 select-none'>
@@ -73,7 +71,7 @@ const Signup = () => {
                 </div>
 
 
-                <form onSubmit={handleSubmit(loginSubmit)} className='space-y-6'>
+                <form onSubmit={handleSubmit(signupSubmit)} className='space-y-6'>
 
                     <div className='flex flex-col space-y-2 group'>
                         <label className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500' htmlFor="name">
@@ -90,7 +88,7 @@ const Signup = () => {
                             />
                         </div>
 
-                        {errors.fullName && <span className='text-[10px] text-red-500 font-light'>{errors.email.message}</span>}
+                        {errors.fullName && <span className='text-[10px] text-red-500 font-light'>{errors.fullName.message}</span>}
 
                     </div>
 

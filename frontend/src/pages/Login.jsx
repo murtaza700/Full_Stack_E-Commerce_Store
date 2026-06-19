@@ -1,62 +1,60 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
-import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUser, clearError, clearMessage } from '../redux/slices/authSlice'
 
 const Login = () => {
-    const BASE_API = import.meta.env.VITE_BASE_API;
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [showPass, setShowPass] = useState(false);
-    const [loading, setLoading] = useState(false);
+
+    const { loading, error, message, isAuthenticated } = useSelector((state) => state.auth);
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const loginSubmit = async (data, e) => {
-        if (e) e.preventDefault();
-        setLoading(true);
+    const loginSubmit = (data) => {
+        dispatch(loginUser(data));
+    };
 
-        try {
-            const response = await axios.post(
-                `${BASE_API}/auth/login`,
-                data,
-                { withCredentials: true }
-            );
-
-            if (response.data.success) {
-                toast.success(response.data.message || 'Welcome back to Scentsô!', {
-                    style: {
-                        fontFamily: 'Poppins',
-                        fontSize: '13px',
-                        borderRadius: '8px',
-                        background: '#111111',
-                        color: '#ffffff',
-                    },
-                    iconTheme: {
-                        primary: '#D4AF37',
-                        secondary: '#111111',
-                    },
-                });
-
-                setTimeout(() => {
-                    navigate('/');
-                }, 2500);
-            }
-        } catch (err) {
-            console.error(err);
-            toast.error(err.response?.data?.message || 'Invalid credentials. Please try again.', {
+    useEffect(() => {
+        if (error) {
+            toast.error(error, {
                 style: {
                     fontFamily: 'Poppins',
                     fontSize: '13px',
                     borderRadius: '8px',
                 }
             });
-        } finally {
-            setLoading(false);
+
+            dispatch(clearError());
         }
-    }
+
+        if (message && isAuthenticated) {
+            toast.success(message || 'Welcome back to Scentsô!', {
+                style: {
+                    fontFamily: 'Poppins',
+                    fontSize: '13px',
+                    borderRadius: '8px',
+                    background: '#111111',
+                    color: '#ffffff',
+                },
+                iconTheme: {
+                    primary: '#D4AF37',
+                    secondary: '#111111',
+                },
+            });
+
+            setTimeout(() => {
+                navigate('/');
+            }, 2500);
+
+            dispatch(clearMessage());
+        }
+    }, [error, message, isAuthenticated, dispatch, navigate]);
 
     return (
         <div className='flex items-center justify-center min-h-screen bg-CARD-BG px-4 select-none'>
@@ -72,30 +70,42 @@ const Login = () => {
                     </p>
                 </div>
 
-
                 <form onSubmit={handleSubmit(loginSubmit)} className='space-y-6'>
 
                     <div className='flex flex-col space-y-2 group'>
-                        <label className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500' htmlFor="email">
+                        <label
+                            className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500'
+                            htmlFor="email"
+                        >
                             Your Email
                         </label>
+
                         <div className='flex items-center w-full border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300'>
                             <Mail size={16} className='text-gray-400 mr-3' />
+
                             <input
                                 className='bg-transparent text-sm text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-light'
                                 placeholder='name@example.com'
                                 id='email'
-                                {...register('email', { required: 'Email address is required' })}
                                 type="email"
+                                {...register('email', {
+                                    required: 'Email address is required'
+                                })}
                             />
                         </div>
 
-                        {errors.email && <span className='text-[10px] text-red-500 font-light'>{errors.email.message}</span>}
-
+                        {errors.email && (
+                            <span className='text-[10px] text-red-500 font-light'>
+                                {errors.email.message}
+                            </span>
+                        )}
                     </div>
 
                     <div className='flex flex-col space-y-2'>
-                        <label className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500' htmlFor="password">
+                        <label
+                            className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500'
+                            htmlFor="password"
+                        >
                             Your Password
                         </label>
 
@@ -106,9 +116,10 @@ const Login = () => {
                                 className='bg-transparent text-sm text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-light'
                                 placeholder='••••••••'
                                 id='password'
-
-                                {...register('password', { required: 'Password is required' })}
                                 type={showPass ? 'text' : 'password'}
+                                {...register('password', {
+                                    required: 'Password is required'
+                                })}
                             />
 
                             <button
@@ -116,11 +127,19 @@ const Login = () => {
                                 onClick={() => setShowPass(!showPass)}
                                 className='text-gray-400 hover:text-TEXT transition-colors focus:outline-none'
                             >
-                                {showPass ? <Eye size={16} /> : <EyeOff size={16} />}
+                                {showPass ? (
+                                    <Eye size={16} />
+                                ) : (
+                                    <EyeOff size={16} />
+                                )}
                             </button>
                         </div>
 
-                        {errors.password && <span className='text-[10px] text-red-500 font-light'>{errors.password.message}</span>}
+                        {errors.password && (
+                            <span className='text-[10px] text-red-500 font-light'>
+                                {errors.password.message}
+                            </span>
+                        )}
                     </div>
 
                     <button
@@ -130,7 +149,6 @@ const Login = () => {
                     >
                         {loading ? 'Verifying...' : 'Login'}
                     </button>
-
                 </form>
 
                 <p className='text-center mt-8 text-xs text-gray-400 font-light'>
