@@ -1,16 +1,114 @@
-# React + Vite
+# All Pages
+- Home
+- Products
+- Product Details
+- Featured
+- About
+- Contact
+- Cart
+- Wishlist
+- Profile
+- Login
+- Signup
+- Checkout
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
+Home /
 
-Currently, two official plugins are available:
+Sabse important.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Sections:
 
-## React Compiler
+Hero banner
+Featured perfumes
+New arrivals
+Best sellers
+Categories
+Testimonials
+Newsletter
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
+Shop / Products /products
 
-## Expanding the ESLint configuration
+Yahan saare perfumes.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Features:
+
+search
+filters
+pagination
+sort
+
+---
+Product Details /products/:id
+
+Single product page.
+
+Contains:
+
+images gallery
+name
+price
+notes (top / middle / base)
+description
+reviews
+add to cart
+wishlist
+
+---
+
+About /about
+
+Brand story.
+
+Example:
+
+Why Scentsô exists
+
+mission
+quality
+sourcing
+
+---
+Contact /contact
+email
+form
+social links
+
+---
+Cart /cart
+
+Shopping cart.
+
+quantity update
+remove item
+subtotal
+
+---
+
+
+Wishlist /wishlist
+
+Saved perfumes.
+
+Navbar:
+✅ Icon / link
+---
+
+Profile /profile
+
+User details:
+
+name
+email
+address
+avatar
+
+
+---
+Orders /orders
+
+Past purchases.
+
+Navbar:
+Usually profile dropdown me.

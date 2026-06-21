@@ -26,3 +26,19 @@ body {
 button {
   cursor: pointer;
 }
+
+
+.custom-pagination .swiper-pagination-bullet {
+  background: #ffffff !important;
+  opacity: 0.4;
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  transition: all 0.3s ease;
+}
+
+.custom-pagination .swiper-pagination-bullet-active {
+  opacity: 1 !important;
+  background: #D4AF37 !important;
+  width: 24px;
+}

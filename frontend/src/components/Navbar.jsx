@@ -1,25 +1,63 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Heart, User, Menu, X, LogOut } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux'
+import { clearError, clearMessage, logoutUser } from '../redux/slices/authSlice'
 
 const Navbar = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const links = [
+        { name: 'Home', link: '/' },
+        { name: 'Products', link: '/products' },
+        { name: 'About', link: '/about' },
+        { name: 'Contact', link: '/contact' },
+    ]
+
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { error, message, isAuthenticated, loading } = useSelector((state) => state.auth);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleLogout = () => {
-        setIsLoggedIn(false);
+        dispatch(logoutUser());
         setIsMenuOpen(false);
-        toast.success('Logged out successfully', {
-            style: { fontFamily: 'Poppins', fontSize: '13px', borderRadius: '8px', background: '#111111', color: '#ffffff' }
-        });
-
-        setTimeout(() => {
-            navigate('/login');
-        }, 2500);
-
     };
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error || 'Logout Error!', {
+                style: {
+                    fontFamily: 'Poppins',
+                    fontSize: '13px',
+                    borderRadius: '8px',
+                }
+            });
+            dispatch(clearError());
+        }
+
+        if (message) {
+            toast.success(message || 'Logged out successfully', {
+                style: {
+                    fontFamily: 'Poppins',
+                    fontSize: '13px',
+                    borderRadius: '8px',
+                    background: '#111111',
+                    color: '#ffffff',
+                },
+                iconTheme: {
+                    primary: '#D4AF37',
+                    secondary: '#111111',
+                },
+            });
+
+            setTimeout(() => {
+                navigate('/login');
+            }, 2500);
+
+            dispatch(clearMessage());
+
+        }
+    }, [error, message, isAuthenticated, navigate, dispatch]);
 
     return (
         <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 select-none">
@@ -36,12 +74,11 @@ const Navbar = () => {
                     </div>
 
                     <div className="hidden md:flex items-center space-x-8">
-                        <Link to="/products" className="text-xs uppercase tracking-[2px] font-medium text-TEXT hover:text-gray-400 transition-colors duration-300">
-                            Shop All
-                        </Link>
-                        <Link to="/categories" className="text-xs uppercase tracking-[2px] font-medium text-TEXT hover:text-gray-400 transition-colors duration-300">
-                            Collections
-                        </Link>
+                        {links.map((nav, index) => (
+                            <Link key={index} to={nav.link} className="text-xs uppercase tracking-[2px] font-medium text-TEXT hover:text-gray-400 transition-colors duration-300">
+                                {nav.name}
+                            </Link>
+                        ))}
                     </div>
 
                     <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
@@ -61,7 +98,7 @@ const Navbar = () => {
                             <span className="absolute -top-1.5 -right-1.5 bg-TEXT text-white text-[9px] font-semibold w-4 h-4 rounded-full flex items-center justify-center">0</span>
                         </Link>
 
-                        {isLoggedIn ? (
+                        {isAuthenticated ? (
                             <div className="hidden md:flex items-center space-x-4">
                                 <Link to="/profile" className="text-TEXT hover:text-gray-400 transition-colors duration-300">
                                     <User size={20} />
@@ -104,21 +141,17 @@ const Navbar = () => {
                     </div>
 
                     <div className="mt-8 space-y-6">
-                        <Link
-                            to="/products"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="block text-xs uppercase tracking-[2px] font-medium text-TEXT hover:text-gray-400 transition-colors"
-                        >
-                            Shop All
-                        </Link>
-                        <Link
-                            to="/categories"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="block text-xs uppercase tracking-[2px] font-medium text-TEXT hover:text-gray-400 transition-colors"
-                        >
-                            Collections
-                        </Link>
-                        {isLoggedIn && (
+                        {links.map((nav, index) => (
+                            <Link
+                                key={index}
+                                to={nav.link}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="block text-xs uppercase tracking-[2px] font-medium text-TEXT hover:text-gray-400 transition-colors"
+                            >
+                                {nav.name}
+                            </Link>
+                        ))}
+                        {isAuthenticated && (
                             <Link
                                 to="/profile"
                                 onClick={() => setIsMenuOpen(false)}
@@ -131,7 +164,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="border-t border-gray-100 pt-6">
-                    {isLoggedIn ? (
+                    {isAuthenticated ? (
                         <button
                             onClick={handleLogout}
                             className="w-full flex items-center justify-between py-3 px-4 bg-red-50 text-red-600 rounded-sm hover:bg-red-100/70 transition-colors duration-300 focus:outline-none cursor-pointer"
