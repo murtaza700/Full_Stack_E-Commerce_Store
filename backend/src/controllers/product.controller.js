@@ -7,7 +7,7 @@ import imageDelete from '../utils/imageDelete.js';
 
 export const createProduct = async (req, res) => {
     try {
-        const { title, description, price, category, stock, outOfStock, sku, createdBy } = req.body;
+        const { title, description, price, category, stock, sku, createdBy } = req.body;
         const file = req.file;
 
         if (!title || !description || !price || !category || !stock) {
@@ -33,7 +33,6 @@ export const createProduct = async (req, res) => {
             price,
             category,
             stock,
-            outOfStock,
             sku,
             createdBy
         });
