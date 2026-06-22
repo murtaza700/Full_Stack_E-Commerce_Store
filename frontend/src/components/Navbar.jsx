@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Heart, User, Menu, X, LogOut } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux'
-import { clearError, clearMessage, logoutUser } from '../redux/slices/authSlice'
+import { clearAuthError, clearAuthMessage, logoutUser } from '../redux/slices/authSlice'
 
 const Navbar = () => {
     const links = [
@@ -32,7 +32,7 @@ const Navbar = () => {
                     borderRadius: '8px',
                 }
             });
-            dispatch(clearError());
+            dispatch(clearAuthError());
         }
 
         if (message) {
@@ -54,7 +54,7 @@ const Navbar = () => {
                 navigate('/login');
             }, 2500);
 
-            dispatch(clearMessage());
+            dispatch(clearAuthMessage());
 
         }
     }, [error, message, isAuthenticated, navigate, dispatch]);

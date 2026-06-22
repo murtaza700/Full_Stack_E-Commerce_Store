@@ -52,7 +52,7 @@ const ManageProducts = () => {
 
             {/* Catalog Layout Table */}
             <div className="bg-white border border-gray-100 rounded-sm shadow-xs overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[600px]">
+                <table className="w-full text-left border-collapse min-w-150">
                     <thead>
                         <tr className="border-b border-gray-100 bg-gray-50 text-gray-400 font-medium text-[10px] uppercase tracking-[2px]">
                             <th className="py-4 px-6">Image</th>
@@ -69,7 +69,7 @@ const ManageProducts = () => {
                             products.map((p) => (
                                 <tr key={p._id} className="hover:bg-gray-50/50 transition-colors">
                                     <td className="py-4 px-6">
-                                        <img src={p.image} alt={p.title} className="w-12 h-12 object-cover border border-gray-100 rounded-sm bg-gray-50" />
+                                        <img src={p.image.url} alt={p.title} className="w-12 h-12 object-cover border border-gray-100 rounded-sm bg-gray-50" />
                                     </td>
                                     <td className="py-4 px-6 font-semibold text-TEXT">{p.title}</td>
                                     <td className="py-4 px-6 text-gray-500">Rs. {p.price}</td>

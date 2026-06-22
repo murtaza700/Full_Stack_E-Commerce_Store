@@ -38,10 +38,11 @@ const productSchema = new mongoose.Schema({
         default: false,
         required: true
     },
-    outOfStock: {
-        type: Boolean,
-        enum: [true, false],
-        default: false
+    gender: {
+        type: String,
+        required: true,
+        enum: ['unisex', 'for man', 'for woman'],
+        default: 'unisex'
     },
     ratings: {
         type: Number,

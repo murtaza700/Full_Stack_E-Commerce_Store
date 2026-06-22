@@ -3,6 +3,9 @@ import { Toaster } from 'react-hot-toast'
 import { Route, Routes } from 'react-router-dom'
 import { loadUser } from './redux/slices/authSlice';
 import { useDispatch } from 'react-redux';
+import ProtectedRoutesAdmin from './components/ProtectedRoutesAdmin';
+import { Suspense } from 'react';
+import Spiner from './components/Spiner';
 
 const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
 const UserLayout = lazy(() => import('./layouts/UserLayout'));
@@ -30,23 +33,29 @@ const App = () => {
     <>
       <Toaster position='top-center' reverseOrder={false} />
 
-      <Routes>
-        <Route path='/' element={<UserLayout />}>
-          <Route index element={<Home />} />
+      <Suspense fallback={<Spiner className={`size-8 border-3`} />}>
+        <Routes>
+          <Route path='/' element={<UserLayout />}>
+            <Route index element={<Home />} />
 
 
-          <Route path='signup' element={<Signup />} />
-          <Route path='login' element={<Login />} />
-        </Route>
+            <Route path='signup' element={<Signup />} />
+            <Route path='login' element={<Login />} />
+          </Route>
 
-        <Route path='/admin/*' element={<AdminLayout />}>
-          <Route index element={<DashboardHome />} />
-          <Route path='products' element={<ManageProducts />} />
-          <Route path='products/add' element={<AddProduct />} />
-          <Route path='products/edit/:id' element={<EditProduct />} />
-          <Route path='orders' element={<ManageOrders />} />
-        </Route>
-      </Routes>
+          <Route path='/admin/*' element={
+            <ProtectedRoutesAdmin>
+              <AdminLayout />
+            </ProtectedRoutesAdmin>
+          }>
+            <Route index element={<DashboardHome />} />
+            <Route path='products' element={<ManageProducts />} />
+            <Route path='products/add' element={<AddProduct />} />
+            <Route path='products/edit/:id' element={<EditProduct />} />
+            <Route path='orders' element={<ManageOrders />} />
+          </Route>
+        </Routes>
+      </Suspense>
 
     </>
   )

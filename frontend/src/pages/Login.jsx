@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
-import { loginUser, clearError, clearMessage } from '../redux/slices/authSlice'
+import { loginUser, clearAuthError, clearAuthMessage } from '../redux/slices/authSlice'
 
 const Login = () => {
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ const Login = () => {
                 }
             });
 
-            dispatch(clearError());
+            dispatch(clearAuthError());
         }
 
         if (message && isAuthenticated) {
@@ -52,7 +52,7 @@ const Login = () => {
                 navigate('/');
             }, 2500);
 
-            dispatch(clearMessage());
+            dispatch(clearAuthMessage());
         }
     }, [error, message, isAuthenticated, dispatch, navigate]);
 

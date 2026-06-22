@@ -7,10 +7,10 @@ import imageDelete from '../utils/imageDelete.js';
 
 export const createProduct = async (req, res) => {
     try {
-        const { title, description, price, category, stock, sku, createdBy } = req.body;
+        const { title, description, price, category, stock, sku, gender } = req.body;
         const file = req.file;
 
-        if (!title || !description || !price || !category || !stock) {
+        if (!title || !description || price == null || !category || stock === undefined || !gender) {
             return res.status(401).json({
                 success: false,
                 message: 'All fields are required!'
@@ -24,6 +24,15 @@ export const createProduct = async (req, res) => {
             });
         }
 
+        const cleanDescription = description?.replace(/<[^>]*>/g, '').trim();
+
+        if (!cleanDescription) {
+            return res.status(400).json({
+                success: false,
+                message: 'Description is Required!'
+            });
+        }
+
         const result = await imageUploader(file.buffer.toString('base64'));
 
         const newProduct = new Product({
@@ -32,9 +41,10 @@ export const createProduct = async (req, res) => {
             image: { url: result.url, fileId: result.fileId },
             price,
             category,
+            gender,
             stock,
             sku,
-            createdBy
+            createdBy: req.user.id
         });
 
         await newProduct.save();
