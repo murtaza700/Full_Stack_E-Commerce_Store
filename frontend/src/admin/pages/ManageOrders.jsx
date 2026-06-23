@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import { showErrorToast, showSuccessToast } from '../../helper/MyToast';
 
 const ManageOrders = () => {
     const BASE_API = import.meta.env.VITE_BASE_API;
@@ -27,7 +27,7 @@ const ManageOrders = () => {
         const newStatus = nextStatusMap[currentStatus];
 
         if (!newStatus) {
-            toast.error('Order status cannot be moved further or is already delivered.');
+            showErrorToast('Order status cannot be moved further or is already delivered.');
             return;
         }
 
@@ -35,11 +35,11 @@ const ManageOrders = () => {
             // Hits your updateOrderStatus backend function securely
             const response = await axios.put(`${BASE_API}/orders/admin/${id}`, { status: newStatus }, { withCredentials: true });
             if (response.data.success) {
-                toast.success(`Order advanced to ${newStatus}`);
+                showSuccessToast(`Order advanced to ${newStatus}`);
                 fetchAllOrders();
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Status progression error');
+            showErrorToast(err.response?.data?.message || 'Status progression error');
         }
     };
 
@@ -76,11 +76,10 @@ const ManageOrders = () => {
                                     <td className="py-4 px-6 text-gray-500 font-light">{new Date(o.createdAt).toLocaleDateString()}</td>
                                     <td className="py-4 px-6 font-medium text-TEXT">Rs. {o.totalPrice}</td>
                                     <td className="py-4 px-6">
-                                        <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider rounded-xs ${
-                                            o.orderStatus === 'Delivered' ? 'bg-green-50 text-green-700' :
-                                            o.orderStatus === 'Shipped' ? 'bg-purple-50 text-purple-700' :
-                                            o.orderStatus === 'Processing' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'
-                                        }`}>
+                                        <span className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider rounded-xs ${o.orderStatus === 'Delivered' ? 'bg-green-50 text-green-700' :
+                                                o.orderStatus === 'Shipped' ? 'bg-purple-50 text-purple-700' :
+                                                    o.orderStatus === 'Processing' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'
+                                            }`}>
                                             {o.orderStatus}
                                         </span>
                                     </td>

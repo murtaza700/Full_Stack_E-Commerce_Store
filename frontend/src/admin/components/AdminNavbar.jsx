@@ -1,22 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../../redux/slices/authSlice.js';
+import { clearAuthError, clearAuthMessage, logoutUser } from '../../redux/slices/authSlice.js';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { showErrorToast, showSuccessToast } from '../../helper/MyToast.jsx';
 
 const AdminNavbar = () => {
-    const { user } = useSelector((state) => state.auth);
+    const { user, error, message, isAuthenticated } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleLogout = () => {
         dispatch(logoutUser());
-        toast.success('Admin logged out successfully', {
-            style: { fontFamily: 'Poppins', fontSize: '13px', borderRadius: '4px' }
-        });
-        navigate('/login');
     };
+
+    useEffect(() => {
+        if (error) {
+            showErrorToast(error || 'Logout Error!');
+            dispatch(clearAuthError());
+        }
+
+        if (message) {
+            showSuccessToast(message || 'Admin logged out successfully');
+            
+            setTimeout(() => {
+                navigate('/login');
+            }, 1000);
+            
+            dispatch(clearAuthMessage());
+        }
+
+    }, [dispatch, error, message]);
 
     return (
         <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-6 md:px-10 select-none">

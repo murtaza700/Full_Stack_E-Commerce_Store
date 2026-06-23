@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import { showErrorToast, showSuccessToast } from '../../helper/MyToast';
 
 const EditProduct = () => {
     const BASE_API = import.meta.env.VITE_BASE_API;
@@ -23,7 +23,7 @@ const EditProduct = () => {
                 setValue('description', data.description);
                 setValue('isActive', data.isActive ?? true);
             } catch (err) {
-                toast.error('Failed to load item schema data');
+                showErrorToast('Failed to load item schema data');
                 navigate('/admin/products');
             } finally {
                 setFetching(false);
@@ -40,11 +40,11 @@ const EditProduct = () => {
 
             const response = await axiosInstance.put(`${BASE_API}/products/admin/${id}`, data, { withCredentials: true });
             if (response.data.success) {
-                toast.success('Fragrance portfolio entry updated!');
+                showSuccessToast('Fragrance portfolio entry updated!');
                 navigate('/admin/products');
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Update request failed.');
+            showErrorToast(err.response?.data?.message || 'Update request failed.');
         } finally {
             setLoading(false);
         }

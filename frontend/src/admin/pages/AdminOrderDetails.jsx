@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, User, MapPin, Mail, Phone, Calendar, ShoppingBag } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { showErrorToast } from '../../helper/MyToast';
 
 const AdminOrderDetails = () => {
     const BASE_API = import.meta.env.VITE_BASE_API;
@@ -19,7 +19,7 @@ const AdminOrderDetails = () => {
                     setOrder(response.data.order);
                 }
             } catch (err) {
-                toast.error('Failed to locate specified order token receipt record.');
+                showErrorToast('Failed to locate specified order token receipt record.');
                 console.error(err);
             } finally {
                 setLoading(false);

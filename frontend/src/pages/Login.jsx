@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser, clearAuthError, clearAuthMessage } from '../redux/slices/authSlice'
+import { showSuccessToast, showErrorToast } from '../helper/MyToast'
 
 const Login = () => {
     const navigate = useNavigate();
@@ -22,31 +22,13 @@ const Login = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error, {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px',
-                }
-            });
+            showErrorToast('Fragrance deleted successfully');
 
             dispatch(clearAuthError());
         }
 
         if (message && isAuthenticated) {
-            toast.success(message || 'Welcome back to Scentsô!', {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px',
-                    background: '#111111',
-                    color: '#ffffff',
-                },
-                iconTheme: {
-                    primary: '#D4AF37',
-                    secondary: '#111111',
-                },
-            });
+            showSuccessToast(message || 'Welcome back to Scentsô!');
 
             setTimeout(() => {
                 navigate('/');

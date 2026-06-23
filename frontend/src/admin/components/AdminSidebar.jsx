@@ -7,6 +7,7 @@ const AdminSidebar = () => {
         { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={18} /> },
         { name: 'Manage Products', path: '/admin/products', icon: <ShoppingBag size={18} /> },
         { name: 'Manage Orders', path: '/admin/orders', icon: <FolderHeart size={18} /> },
+        { name: 'Manage Categories', path: '/admin/categories', icon: <FolderHeart size={18} /> },
     ];
 
     return (
@@ -28,10 +29,9 @@ const AdminSidebar = () => {
                             to={item.path}
                             end={item.path === '/admin'}
                             className={({ isActive }) =>
-                                `flex items-center space-x-3 px-4 py-3 text-xs uppercase tracking-[2px] font-medium rounded-sm transition-all duration-300 ${
-                                    isActive
-                                        ? 'bg-white text-[#111111] font-semibold shadow-md'
-                                        : 'text-neutral-400 hover:bg-neutral-900 hover:text-white'
+                                `flex items-center space-x-3 px-4 py-3 text-xs uppercase tracking-[2px] font-medium rounded-sm transition-all duration-300 ${isActive
+                                    ? 'bg-white text-[#111111] font-semibold shadow-md'
+                                    : 'text-neutral-400 hover:bg-neutral-900 hover:text-white'
                                 }`
                             }
                         >

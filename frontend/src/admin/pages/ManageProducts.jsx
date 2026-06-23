@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Plus, Edit3, Trash2 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { showErrorToast, showSuccessToast } from '../../helper/MyToast';
 
 const ManageProducts = () => {
     const BASE_API = import.meta.env.VITE_BASE_API;
@@ -27,11 +27,11 @@ const ManageProducts = () => {
         try {
             const response = await axios.delete(`${BASE_API}/products/admin/${id}`, { withCredentials: true });
             if (response.data.success) {
-                toast.success('Fragrance deleted successfully');
+                showSuccessToast('Fragrance deleted successfully');
                 fetchProducts(); // Refresh records dynamically
             }
         } catch (err) {
-            toast.error(err.response?.data?.message || 'Delete operation failed');
+            showErrorToast(err.response?.data?.message || 'Delete operation failed');
         }
     };
 

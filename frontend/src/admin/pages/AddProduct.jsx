@@ -2,10 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { toast } from 'react-hot-toast';
 import { clearProductError, clearProductMessage, createProduct } from '../../redux/slices/productSlice';
 import { clearCategoryError, clearCategoryMessage, getAllCategories } from '../../redux/slices/categorySlice';
 import { useSelector, useDispatch } from 'react-redux';
+import { showErrorToast, showSuccessToast } from '../../helper/MyToast';
 
 const AddProduct = () => {
     const dispatch = useDispatch();
@@ -62,12 +62,12 @@ const AddProduct = () => {
         const plainText = description.replace(/<[^>]*>/g, '').trim();
 
         if (!plainText) {
-            toast.error('Description is required');
+            showErrorToast('Description is required');
             return;
         }
 
         if (!data.image) {
-            toast.error('Product image is required');
+            showErrorToast('Product image is required');
             return;
         }
 
@@ -91,19 +91,13 @@ const AddProduct = () => {
 
     useEffect(() => {
         if (productsError?.create) {
-            toast.error(productsError.create, {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px'
-                }
-            });
+            showErrorToast(productsError.create);
 
             dispatch(clearProductError('create'));
         }
 
         if (categoryError?.fetchAll) {
-            toast.error(categoryError.fetchAll);
+            showErrorToast(categoryError.fetchAll);
             dispatch(clearCategoryError('fetchAll'));
         }
 
@@ -112,19 +106,7 @@ const AddProduct = () => {
         }
 
         if (productMessage?.create) {
-            toast.success(productMessage.create, {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px',
-                    background: '#111111',
-                    color: '#ffffff'
-                },
-                iconTheme: {
-                    primary: '#D4AF37',
-                    secondary: '#111111'
-                }
-            });
+            showSuccessToast(productMessage.create);
 
             reset({
                 title: '',

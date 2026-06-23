@@ -3,9 +3,9 @@ import Product from '../models/product.model.js';
 
 export const createCategory = async (req, res) => {
     try {
-        const { name, isActive, createdBy } = req.body;
+        const { name, isActive } = req.body;
 
-        if (!name || isActive === undefined || !createdBy) {
+        if (!name || isActive === undefined) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required!'
@@ -26,7 +26,7 @@ export const createCategory = async (req, res) => {
         const newCategory = new Category({
             name,
             isActive,
-            createdBy
+            createdBy: req.user.id
         });
 
         await newCategory.save();
@@ -149,6 +149,7 @@ export const getAllCategories = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Categories fetched!',
+            count: categories.length,
             categories
         });
 

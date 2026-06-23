@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Eye, EyeOff, Lock, Mail, UserRound } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-hot-toast'
+import { showSuccessToast, showErrorToast } from '../helper/MyToast'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearAuthError, clearAuthMessage, signupUser } from '../redux/slices/authSlice'
 
@@ -22,31 +22,12 @@ const Signup = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error || 'Invalid credentials. Please try again.', {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px',
-                }
-            });
+            showErrorToast(error || 'Invalid credentials. Please try again.');
             dispatch(clearAuthError());
         }
 
         if (message && isAuthenticated) {
-            toast.success(message || 'Welcome back to Scentsô!', {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px',
-                    background: '#111111',
-                    color: '#ffffff',
-                },
-                iconTheme: {
-                    primary: '#D4AF37',
-                    secondary: '#111111',
-                },
-            }
-            );
+            showSuccessToast(message || 'Welcome to Scentsô!');
             dispatch(clearAuthMessage());
 
             setTimeout(() => {
