@@ -18,9 +18,9 @@ export const createProduct = createAsyncThunk(
 
 export const getAllProducts = createAsyncThunk(
     'products/getAllProducts',
-    async (_, thunkAPI) => {
+    async ({ page = 1, limit = 10 } = {}, thunkAPI) => {
         try {
-            const res = await api.get('/products');
+            const res = await api.get(`/products?page=${page}&limit=${limit}`);
             return res.data;
         } catch (err) {
             console.error('Get All Products Error!', err);

@@ -59,7 +59,10 @@ const AddProduct = () => {
     };
 
     const onSubmit = (data) => {
-        const plainText = description.replace(/<[^>]*>/g, '').trim();
+        const plainText = description
+            .replace(/<(.|\n)*?>/g, '')
+            .replace(/&nbsp;/g, '')
+            .trim();
 
         if (!plainText) {
             showErrorToast('Description is required');

@@ -106,11 +106,6 @@ export const updateProduct = async (req, res) => {
             });
         }
 
-        console.log(product);
-
-        console.log('!!!!!!!', req.params.id, req.body,);
-
-
         return res.status(200).json({
             success: true,
             message: 'Product updated!',
@@ -205,7 +200,7 @@ export const getAllProducts = async (req, res) => {
 
 export const getSingleProduct = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id).populate('category', '-_id -createdBy -createdAt -updatedAt');
+        const product = await Product.findById(req.params.id).populate('category', '-createdBy -createdAt -updatedAt');
 
         if (!product) {
             return res.status(404).json({

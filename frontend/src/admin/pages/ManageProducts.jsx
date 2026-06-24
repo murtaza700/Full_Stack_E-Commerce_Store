@@ -1,41 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { Plus, Edit3, Trash2 } from 'lucide-react';
 import { showErrorToast, showSuccessToast } from '../../helper/MyToast';
+import { useDispatch, useSelector } from 'react-redux'
+import { clearProductError, clearProductMessage, deleteProduct, getAllProducts } from '../../redux/slices/productSlice'
 
 const ManageProducts = () => {
-    const BASE_API = import.meta.env.VITE_BASE_API;
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const dispatch = useDispatch();
+    const { loading, errors, messages, products, meta } = useSelector(state => state.products);
 
-    const fetchProducts = async () => {
-        try {
-            const response = await axios.get(`${BASE_API}/products`); // Normal products list route
-            setProducts(response.data.products || response.data || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    useEffect(() => { fetchProducts(); }, []);
+    const totalPages = meta?.totalPages || 1;
+
+    const pageNumbers = Array.from(
+        { length: totalPages },
+        (_, i) => i + 1
+    );
+
+
+    useEffect(() => {
+        dispatch(getAllProducts({ page, limit: 10 }));
+    }, [dispatch, page]);
 
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to permanently delete this fragrance?')) return;
-        try {
-            const response = await axios.delete(`${BASE_API}/products/admin/${id}`, { withCredentials: true });
-            if (response.data.success) {
-                showSuccessToast('Fragrance deleted successfully');
-                fetchProducts(); // Refresh records dynamically
-            }
-        } catch (err) {
-            showErrorToast(err.response?.data?.message || 'Delete operation failed');
-        }
+        dispatch(deleteProduct(id));
     };
 
-    if (loading) return <div className="text-xs uppercase tracking-widest text-gray-400">Syncing products...</div>;
+    useEffect(() => {
+        if (errors.delete) {
+            showErrorToast(errors.delete || 'Product Delete Error!');
+            dispatch(clearProductError('delete'));
+        }
+
+        if (messages.delete) {
+            showSuccessToast(messages.delete || 'Product Deleted!');
+            dispatch(clearProductMessage('delete'));
+        }
+    }, [errors.delete, messages.delete, dispatch]);
+
+    if (loading.fetchAll) return <div className="text-xs uppercase tracking-widest text-gray-400">Syncing products...</div>;
 
     return (
         <div className="space-y-8">
@@ -74,8 +79,8 @@ const ManageProducts = () => {
                                     <td className="py-4 px-6 font-semibold text-TEXT">{p.title}</td>
                                     <td className="py-4 px-6 text-gray-500">Rs. {p.price}</td>
                                     <td className="py-4 px-6">
-                                        <span className={`px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider rounded-xs ${p.isActive !== false ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                                            {p.isActive !== false ? 'In Stock' : 'Out of Stock'}
+                                        <span className={`px-2.5 text-center flex items-center justify-center py-1 text-[10px] font-semibold uppercase tracking-wider rounded-xs ${p.stock !== false ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                                            {p.stock !== false ? 'In Stock' : 'Out of Stock'}
                                         </span>
                                     </td>
                                     <td className="py-4 px-6 flex justify-center items-center space-x-4 h-20">
@@ -91,6 +96,43 @@ const ManageProducts = () => {
                         )}
                     </tbody>
                 </table>
+
+
+                <div className="flex justify-center items-center gap-3 mt-12 mb-6 select-none flex-wrap">
+
+                    <button
+                        onClick={() => setPage(prev => prev - 1)}
+                        disabled={page === 1}
+                        className="px-4 py-2 border border-gray-200 text-[10px] uppercase tracking-[2px] font-semibold text-TEXT rounded-sm disabled:opacity-30 disabled:hover:bg-transparent hover:bg-gray-50 active:scale-95 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed focus:outline-none"
+                    >
+                        Prev
+                    </button>
+
+
+                    <div className="flex items-center gap-1.5 font-mono text-xs">
+                        {pageNumbers.map(num => (
+                            <button
+                                key={num}
+                                onClick={() => setPage(num)}
+                                className={`
+                    w-9 h-9 border text-xs font-semibold rounded-sm transition-all duration-300 flex items-center justify-center cursor-pointer focus:outline-none
+                    ${page === num ? 'bg-TEXT text-white border-TEXT shadow-xs font-bold'
+                                        : 'bg-white text-TEXT border-gray-200 hover:border-TEXT hover:text-TEXT'}`}>
+                                {num}
+                            </button>
+                        ))}
+                    </div>
+
+
+                    <button
+                        onClick={() => setPage(prev => prev + 1)}
+                        disabled={page === totalPages}
+                        className="px-4 py-2 border border-gray-200 text-[10px] uppercase tracking-[2px] font-semibold text-TEXT rounded-sm disabled:opacity-30 disabled:hover:bg-transparent hover:bg-gray-50 active:scale-95 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed focus:outline-none">
+                        Next
+                    </button>
+                </div>
+
+
             </div>
         </div>
     );
