@@ -56,7 +56,10 @@ export const toggleFeatured = async (req, res) => {
 export const getAllFeatured = async (req, res) => {
     try {
         const allFeatureds = await Featured.find()
-            .populate('product');
+            .populate({
+                path: 'product',
+                populate: { path: 'category' }
+            });
 
         if (!allFeatureds || allFeatureds.length === 0) {
             return res.status(200).json({
