@@ -37,6 +37,7 @@ const ManageProducts = () => {
         if (messages.delete) {
             showSuccessToast(messages.delete || 'Product Deleted!');
             dispatch(clearProductMessage('delete'));
+            dispatch(getAllProducts({ page, limit: 10 }));
         }
     }, [errors.delete, messages.delete, dispatch]);
 

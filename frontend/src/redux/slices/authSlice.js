@@ -36,9 +36,10 @@ export const loadUser = createAsyncThunk(
             const res = await api.get("/auth/getme");
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(
-                err.response?.data?.message || "You are not logged in!"
-            );
+            return thunkAPI.rejectWithValue({
+                message: err.response?.data?.message || "You are not logged in!",
+                status: err.response?.status
+            });
         }
     }
 );
@@ -74,7 +75,6 @@ const authSlice = createSlice({
         clearAuthError: (state) => {
             state.error = null;
         },
-
         clearAuthMessage: (state) => {
             state.message = "";
         },
@@ -102,6 +102,7 @@ const authSlice = createSlice({
                 state.error = action.payload;
             })
 
+
             .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -121,6 +122,7 @@ const authSlice = createSlice({
                 state.error = action.payload;
             })
 
+
             .addCase(loadUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -129,15 +131,21 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
-                state.message = action.payload.message;
-                state.role = action.payload.role;
+                state.message = action.payload.message || "";
+                state.role = action.payload.role || action.payload.user?.role || null;
             })
             .addCase(loadUser.rejected, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = false;
                 state.user = null;
-                state.error = action.payload;
+                state.role = null;
+                if (action.payload?.status === 401) {
+                    state.error = null;
+                } else {
+                    state.error = action.payload?.message || "Server connection lost!";
+                }
             })
+
 
             .addCase(logoutUser.pending, (state) => {
                 state.loading = true;
@@ -147,6 +155,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = false;
                 state.user = null;
+                state.role = null;
                 state.message = action.payload.message;
             })
             .addCase(logoutUser.rejected, (state, action) => {

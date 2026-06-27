@@ -22,7 +22,7 @@ const Login = () => {
 
     useEffect(() => {
         if (error) {
-            showErrorToast('Fragrance deleted successfully');
+            showErrorToast(error || 'Login Fail!');
 
             dispatch(clearAuthError());
         }

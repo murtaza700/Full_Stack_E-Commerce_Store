@@ -144,21 +144,21 @@ const FeaturedProducts = () => {
                                         )}
                                     </div>
 
-                                   
+
                                     <div className="space-y-1.5 flex-1 flex flex-col justify-between">
                                         <div>
-                                           
+
                                             <p className="text-[9px] uppercase tracking-[2px] text-gray-400 font-medium">
                                                 {perfume.category?.name || "Oud Formulation"}
                                             </p>
-                                            
+
                                             <h3 className="text-xs font-semibold uppercase tracking-wider text-TEXT line-clamp-1 mt-0.5 group-hover:text-gray-600 transition-colors">
                                                 {perfume.title}
                                             </h3>
                                         </div>
 
                                         <div className="pt-2 flex justify-between items-center border-t border-gray-50 mt-1">
-                                           
+
                                             <p className="text-xs font-bold text-TEXT font-mono">
                                                 PKR {perfume.price?.toLocaleString()}
                                             </p>
