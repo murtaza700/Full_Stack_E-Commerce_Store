@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useFetcher } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Heart, ShoppingBag, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { showErrorToast, showSuccessToast } from '../helper/MyToast'
-import api from '../lib/api'
+import { useDispatch, useSelector } from 'react-redux'
+import { clearFeaturedError, getFeaturedProducts } from '../redux/slices/featuredSlice'
 
 const FeaturedProducts = () => {
-    const [products, setProducts] = useState();
-    const [loading, setLoading] = useState(true);
     const [wishlistedIds, setWishlistedIds] = useState(new Set());
+    const dispatch = useDispatch();
+    const { featured, loading, errors } = useSelector(state => state.featured);
 
     useEffect(() => {
-        const fetchFeaturedItems = async () => {
-            try {
-                const response = await api.get(`/featured`);
-                setProducts(response.data.featured || []);
-            } catch (err) {
-                console.error('Error fetching showcase inventory', err);
+        dispatch(getFeaturedProducts());
 
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchFeaturedItems();
-    }, []);
-    console.log(products)
+        if (errors.fetch) {
+            showErrorToast(errors.fetch || 'Featured Fetch Error!');
+            dispatch(clearFeaturedError('fetch'));
+        }
+
+    }, [dispatch, errors]);
+
+
     const handleWishlistToggle = async (productId, e) => {
         if (e) e.preventDefault();
         try {
@@ -66,7 +63,7 @@ const FeaturedProducts = () => {
         }
     };
 
-    if (loading) {
+    if (loading.fetch) {
         return (
             <div className="flex flex-col items-center justify-center py-24 space-y-3 bg-white">
                 <Loader2 size={24} className="animate-spin text-TEXT" />
@@ -92,7 +89,7 @@ const FeaturedProducts = () => {
 
                 {/* Fragrance Product Display Cards Grid Layout Row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-                    {products.map((item, idx) => {
+                    {featured.map((item, idx) => {
                         const perfume = item.product;
 
                         if (!perfume) return null;
@@ -178,7 +175,7 @@ const FeaturedProducts = () => {
                 </div>
 
 
-                {products.length === 0 && (
+                {featured.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-20 border border-dashed border-gray-200 rounded-sm">
                         <p className="text-sm text-gray-500 uppercase tracking-[2px]">
                             No products available
