@@ -12,7 +12,7 @@ const authMiddleware = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Unauthorized access: No token found!'
+                message: 'Please Login First!'
             });
         }
 

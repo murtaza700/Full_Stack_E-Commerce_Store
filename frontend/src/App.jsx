@@ -1,8 +1,9 @@
 import React, { lazy, useEffect, Suspense } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { Route, Routes } from 'react-router-dom'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loadUser } from './redux/slices/authSlice';
+import { getMyWishlist } from './redux/slices/wishlistSlice'
 import ProtectedRoutesAdmin from './components/ProtectedRoutesAdmin';
 import Spiner from './components/Spiner';
 
@@ -22,10 +23,17 @@ const Home = lazy(() => import('./pages/Home'));
 
 const App = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector(state => state.auth);
 
   useEffect(() => {
     dispatch(loadUser());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(getMyWishlist());
+    }
+  }, [dispatch, isAuthenticated]);
 
   return (
     <>
