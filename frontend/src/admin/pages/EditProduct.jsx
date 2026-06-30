@@ -240,8 +240,8 @@ const EditProduct = () => {
                             className="py-2.5 px-3 border border-gray-200 text-xs rounded-sm"
                         >
                             <option value="">Select Gender</option>
-                            <option value="for man">For Man</option>
-                            <option value="for woman">For Woman</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
                             <option value="unisex">Unisex</option>
                         </select>
 

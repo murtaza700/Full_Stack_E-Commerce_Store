@@ -22,11 +22,11 @@ const AdminNavbar = () => {
 
         if (message) {
             showSuccessToast(message || 'Admin logged out successfully');
-            
+
             setTimeout(() => {
                 navigate('/login');
             }, 1000);
-            
+
             dispatch(clearAuthMessage());
         }
 

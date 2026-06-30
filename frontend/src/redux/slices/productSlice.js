@@ -18,9 +18,11 @@ export const createProduct = createAsyncThunk(
 
 export const getAllProducts = createAsyncThunk(
     'products/getAllProducts',
-    async ({ page = 1, limit = 10 } = {}, thunkAPI) => {
+    async ({ page = 1, limit = 12, category = '', gender = '', search = '', sort = 'default' } = {}, thunkAPI) => {
         try {
-            const res = await api.get(`/products?page=${page}&limit=${limit}`);
+            const res = await api.get(
+                `/products/search?page=${page}&limit=${limit}&category=${category}&gender=${gender}&search=${search}&sort=${sort}`
+            );
             return res.data;
         } catch (err) {
             console.error('Get All Products Error!', err);
@@ -30,6 +32,22 @@ export const getAllProducts = createAsyncThunk(
         }
     }
 );
+
+
+// export const getAllProducts = createAsyncThunk(
+//     'products/getAllProducts',
+//     async ({ page = 1, limit = 10 } = {}, thunkAPI) => {
+//         try {
+//             const res = await api.get(`/products?page=${page}&limit=${limit}`);
+//             return res.data;
+//         } catch (err) {
+//             console.error('Get All Products Error!', err);
+//             return thunkAPI.rejectWithValue(
+//                 err.response?.data?.message || 'Products Fetching Error!'
+//             );
+//         }
+//     }
+// );
 
 export const getSingleProduct = createAsyncThunk(
     'products/getSingleProduct',

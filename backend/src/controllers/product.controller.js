@@ -1,4 +1,5 @@
 import ImageKit from '@imagekit/nodejs';
+import mongoose from 'mongoose';
 
 import Product from '../models/product.model.js';
 import Category from '../models/category.model.js';
@@ -278,43 +279,43 @@ export const getProductsByCategory = async (req, res) => {
 
 export const searchAndFilterProducts = async (req, res) => {
     try {
-        const { keyword, category, minPrice, maxPrice, ratings, page, limit, sort } = req.query;
-
+        const { search, category, minPrice, maxPrice, ratings, page, limit, sort, gender } = req.query;
         const pageNumber = Number(page) || 1;
-        const limitNumber = Number(limit) || 10;
+        const limitNumber = Number(limit) || 12;
         const skip = (pageNumber - 1) * limitNumber;
 
         let sortOption = '-createdAt';
-        if (sort === 'price_low') sortOption = 'price';
-        if (sort === 'price_high') sortOption = '-price';
+        if (sort === 'price-low') sortOption = 'price';
+        if (sort === 'price-high') sortOption = '-price';
 
         let queryObject = {};
 
-        if (keyword) {
-            queryObject.title = {
-                $regex: keyword,
-                $options: 'i'
-            };
+        if (search) {
+            queryObject.title = { $regex: search, $options: 'i' };
         }
 
+
         if (category) {
-            queryObject.category = category;
+            if (mongoose.Types.ObjectId.isValid(category)) {
+                queryObject.category = category;
+            } else {
+                const foundCategoryObj = await Category.findOne({ name: { $regex: category, $options: 'i' } });
+                if (foundCategoryObj) {
+                    queryObject.category = foundCategoryObj._id;
+                } else {
+                    queryObject.category = category;
+                }
+            }
+        }
+
+        if (gender) {
+            queryObject.gender = gender;
         }
 
         if (minPrice || maxPrice) {
             queryObject.price = {};
-
-            if (minPrice) {
-                queryObject.price.$gte = Number(minPrice);
-            }
-
-            if (maxPrice) {
-                queryObject.price.$lte = Number(maxPrice);
-            }
-        }
-
-        if (ratings) {
-            queryObject.ratings = { $gte: Number(ratings) }
+            if (minPrice) queryObject.price.$gte = Number(minPrice);
+            if (maxPrice) queryObject.price.$lte = Number(maxPrice);
         }
 
         const totalProducts = await Product.countDocuments(queryObject);
@@ -325,34 +326,109 @@ export const searchAndFilterProducts = async (req, res) => {
             .skip(skip)
             .limit(limitNumber);
 
-        if (products.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Products not found!'
+        if (!products || products.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'Products empty state.',
+                meta: { totalProducts: 0, totalPages: 0, currentPage: pageNumber, limit: limitNumber },
+                count: 0,
+                products: []
             });
         }
 
         return res.status(200).json({
             success: true,
             message: 'Products found!',
-            meta: {
-                totalProducts,
-                totalPages: Math.ceil(totalProducts / limitNumber),
-                currentPage: pageNumber,
-                limit: limitNumber
-            },
+            meta: { totalProducts, totalPages: Math.ceil(totalProducts / limitNumber), currentPage: pageNumber, limit: limitNumber },
             count: products.length,
             products
         });
 
     } catch (err) {
         console.error(`Product Search Error! ${err}`);
-        return res.status(500).json({
-            success: false,
-            message: 'Server Error!'
-        });
+        return res.status(500).json({ success: false, message: 'Server Error!' });
     }
 }
+
+
+
+// export const searchAndFilterProducts = async (req, res) => {
+//     try {
+//         const { keyword, category, minPrice, maxPrice, ratings, page, limit, sort } = req.query;
+
+//         const pageNumber = Number(page) || 1;
+//         const limitNumber = Number(limit) || 10;
+//         const skip = (pageNumber - 1) * limitNumber;
+
+//         let sortOption = '-createdAt';
+//         if (sort === 'price_low') sortOption = 'price';
+//         if (sort === 'price_high') sortOption = '-price';
+
+//         let queryObject = {};
+
+//         if (keyword) {
+//             queryObject.title = {
+//                 $regex: keyword,
+//                 $options: 'i'
+//             };
+//         }
+
+//         if (category) {
+//             queryObject.category = category;
+//         }
+
+//         if (minPrice || maxPrice) {
+//             queryObject.price = {};
+
+//             if (minPrice) {
+//                 queryObject.price.$gte = Number(minPrice);
+//             }
+
+//             if (maxPrice) {
+//                 queryObject.price.$lte = Number(maxPrice);
+//             }
+//         }
+
+//         if (ratings) {
+//             queryObject.ratings = { $gte: Number(ratings) }
+//         }
+
+//         const totalProducts = await Product.countDocuments(queryObject);
+
+//         const products = await Product.find(queryObject)
+//             .populate('category', '-_id -createdBy -updatedAt -createdAt')
+//             .sort(sortOption)
+//             .skip(skip)
+//             .limit(limitNumber);
+
+//         if (products.length === 0) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'Products not found!'
+//             });
+//         }
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Products found!',
+//             meta: {
+//                 totalProducts,
+//                 totalPages: Math.ceil(totalProducts / limitNumber),
+//                 currentPage: pageNumber,
+//                 limit: limitNumber
+//             },
+//             count: products.length,
+//             products
+//         });
+
+//     } catch (err) {
+//         console.error(`Product Search Error! ${err}`);
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Server Error!'
+//         });
+//     }
+// }
 
 export const createProductReview = async (req, res) => {
     try {

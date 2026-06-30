@@ -4,8 +4,10 @@ import { Route, Routes } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser } from './redux/slices/authSlice';
 import { getMyWishlist } from './redux/slices/wishlistSlice'
+import { getAllMyCarts } from './redux/slices/cartSlice'
 import ProtectedRoutesAdmin from './components/ProtectedRoutesAdmin';
 import Spiner from './components/Spiner';
+import PageScrollTop from './components/PageScrollTop';
 
 const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
 const UserLayout = lazy(() => import('./layouts/UserLayout'));
@@ -20,6 +22,7 @@ const ManageCategories = lazy(() => import('./admin/pages/ManageCategories'));
 const Signup = lazy(() => import('./pages/Signup'));
 const Login = lazy(() => import('./pages/Login'));
 const Home = lazy(() => import('./pages/Home'));
+const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 
 const App = () => {
   const dispatch = useDispatch();
@@ -32,12 +35,15 @@ const App = () => {
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(getMyWishlist());
+      dispatch(getAllMyCarts());
     }
   }, [dispatch, isAuthenticated]);
 
   return (
     <>
       <Toaster position='top-center' reverseOrder={false} />
+
+      <PageScrollTop />
 
       <Suspense fallback={
         <div className="min-h-screen bg-CARD-BG flex items-center justify-center select-none">
@@ -47,6 +53,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<UserLayout />}>
             <Route index element={<Home />} />
+            <Route path='products' element={<ProductsPage />} />
             <Route path='signup' element={<Signup />} />
             <Route path='login' element={<Login />} />
           </Route>

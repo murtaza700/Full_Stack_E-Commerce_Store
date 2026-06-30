@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Heart, User, Menu, X, LogOut } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux'
 import { clearAuthError, clearAuthMessage, logoutUser } from '../redux/slices/authSlice'
+import { showErrorToast, showSuccessToast } from '../helper/MyToast'
 
 const Navbar = () => {
+    const { count: cartCount } = useSelector(state => state.cart);
+    const { wishlistItems } = useSelector(state => state.wishlist);
+    const wishCount = wishlistItems.length;
+
     const links = [
         { name: 'Home', link: '/' },
         { name: 'Products', link: '/products' },
@@ -25,37 +29,13 @@ const Navbar = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error || 'Logout Error!', {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px',
-                }
-            });
+            showErrorToast(error || 'Logout Error!');
             dispatch(clearAuthError());
         }
 
         if (message) {
-            toast.success(message || 'Logged out successfully', {
-                style: {
-                    fontFamily: 'Poppins',
-                    fontSize: '13px',
-                    borderRadius: '8px',
-                    background: '#111111',
-                    color: '#ffffff',
-                },
-                iconTheme: {
-                    primary: '#D4AF37',
-                    secondary: '#111111',
-                },
-            });
-
-            setTimeout(() => {
-                navigate('/login');
-            }, 2500);
-
+            showSuccessToast(message || 'Logged out successfully');
             dispatch(clearAuthMessage());
-
         }
     }, [error, message, isAuthenticated, navigate, dispatch]);
 
@@ -90,12 +70,12 @@ const Navbar = () => {
                     <div className="flex items-center space-x-6">
                         <Link to="/wishlist" className="text-TEXT hover:text-gray-400 transition-colors duration-300 relative group">
                             <Heart size={20} />
-                            <span className="absolute -top-1.5 -right-1.5 bg-TEXT text-white text-[9px] font-semibold w-4 h-4 rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-300">0</span>
+                            <span className="absolute -top-1.5 -right-1.5 bg-TEXT text-white text-[9px] font-semibold w-4 h-4 rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-300">{wishCount ? Number(wishCount) : 0}</span>
                         </Link>
 
                         <Link to="/cart" className="text-TEXT hover:text-gray-400 transition-colors duration-300 relative group">
                             <ShoppingBag size={20} />
-                            <span className="absolute -top-1.5 -right-1.5 bg-TEXT text-white text-[9px] font-semibold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                            <span className="absolute -top-1.5 -right-1.5 bg-TEXT text-white text-[9px] font-semibold w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
                         </Link>
 
                         {isAuthenticated ? (

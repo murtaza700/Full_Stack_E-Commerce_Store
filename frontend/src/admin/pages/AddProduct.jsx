@@ -262,8 +262,8 @@ const AddProduct = () => {
                             className="py-2.5 px-3 border border-gray-200 text-xs rounded-sm"
                         >
                             <option value="">Select Gender</option>
-                            <option value="for man">For Man</option>
-                            <option value="for woman">For Woman</option>
+                            <option value="men">For Man</option>
+                            <option value="women">For Woman</option>
                             <option value="unisex">Unisex</option>
                         </select>
 
