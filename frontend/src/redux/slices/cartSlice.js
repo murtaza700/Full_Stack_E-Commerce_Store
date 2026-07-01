@@ -15,9 +15,9 @@ export const getAllMyCarts = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
     'cart/addToCart',
-    async (id, thunkAPI) => {
+    async ({ id, quantity }, thunkAPI) => {
         try {
-            const res = await api.post('/cart', { item: id });
+            const res = await api.post('/cart', { item: id, quantity });
             return res.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.response?.data?.message || 'Add to Cart Error!');
@@ -131,6 +131,7 @@ const cartSlice = createSlice({
             .addCase(getAllMyCarts.fulfilled, (state, action) => {
                 state.loading.fetchAll = false;
                 state.cartItems = action.payload.allCarts || [];
+                state.count = action.payload.count;
                 calculateCartTotals(state);
             })
             .addCase(getAllMyCarts.rejected, (state, action) => {

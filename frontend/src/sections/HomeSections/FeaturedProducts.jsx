@@ -118,7 +118,7 @@ const FeaturedProducts = () => {
                                 isWishLoading={wishBtnLoading?.[perfume._id]}
                                 isCartLoading={cartBtnLoading?.[perfume._id]}
                                 onWishlistToggle={(id) => handleWishlistClick(id)}
-                                onAddToCart={(id) => handleCartClick(id)}
+                                onAddToCart={(id) => handleCartClick({ id, quantity: 1 })}
                             />
                         );
                     })}

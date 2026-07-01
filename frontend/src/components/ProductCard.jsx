@@ -29,6 +29,7 @@ const ProductCard = ({
                     <img
                         src={perfume.image?.url || perfume.image}
                         alt={perfume.title}
+                        loading='lazy'
                         className="w-full h-full object-cover object-center transform scale-100 group-hover:scale-102 transition-transform duration-500 ease-out"
                     />
 

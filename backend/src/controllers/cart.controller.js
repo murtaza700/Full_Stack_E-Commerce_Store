@@ -3,53 +3,68 @@ import Product from "../models/product.model.js";
 
 export const addToCart = async (req, res) => {
     try {
-        const { item } = req.body;
+        const { item, quantity } = req.body;
 
         if (!item) {
             return res.status(400).json({
                 success: false,
-                message: 'Item is required!'
+                message: 'Item parameter token required!'
             });
         }
 
         const isItemExist = await Product.findById(item);
-
         if (!isItemExist) {
             return res.status(404).json({
                 success: false,
-                message: 'Product not found!'
+                message: 'Luxury fragrance not found in inventory stock vault.'
             });
         }
 
-        const isAlreadyAddedToCart = await Cart.findOne({ user: req.user.id, item: item });
+        const purchaseQuantity = Number(quantity) || 1;
 
-        if (isAlreadyAddedToCart) {
+        let cartItem = await Cart.findOne({
+            user: req.user.id,
+            item: item
+        });
+
+        if (cartItem) {
+            cartItem.quantity += purchaseQuantity;
+            await cartItem.save();
+
+            const populatedItem = await Cart.findById(cartItem._id).populate({
+                path: 'item',
+                select: 'title price image'
+            });
+
             return res.status(200).json({
                 success: true,
-                message: 'Product is already in your cart!'
+                message: `Luxury shopping bag updated! Added ${purchaseQuantity} more pieces.`,
+                cart: populatedItem
             });
         }
 
         const newCart = new Cart({
             user: req.user.id,
             item,
-            quantity: 1
+            quantity: purchaseQuantity
         });
 
         await newCart.save();
 
+        const populatedNewItem = await Cart.findById(newCart._id).populate({
+            path: 'item',
+            select: 'title price image'
+        });
+
         return res.status(201).json({
             success: true,
-            message: 'Product added to cart!',
-            cart: newCart
+            message: 'Product successfully added to your luxury shopping bag!',
+            cart: populatedNewItem
         });
 
     } catch (err) {
         console.error(`Add To Cart Error! ${err}`);
-        return res.status(500).json({
-            success: false,
-            message: 'Server Error!'
-        });
+        return res.status(500).json({ success: false, message: 'Server Error!' });
     }
 }
 
@@ -205,7 +220,7 @@ export const removeAllFromCart = async (req, res) => {
             success: true,
             message: 'All cart items removed successfully!'
         });
-        
+
     } catch (err) {
         console.error(`Remove All From Cart Error! ${err}`);
         return res.status(500).json({
