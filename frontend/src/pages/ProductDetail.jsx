@@ -225,8 +225,8 @@ const ProductDetails = () => {
                                             showErrorToast('Please login to activate and load your premium luxury shopping bag.');
                                             return;
                                         }
-                                        // Dynamic dispatch handler linking explicit quantity overrides parameters payload safely
-                                        dispatch(addToCart({ id: product._id, quantity }));
+
+                                        dispatch(addToCart({ id: product._id, quantity, isFromDetails: true }));
                                     }}
                                     disabled={product.stock === false || cartBtnLoading?.[product._id]}
                                     className="flex-1 bg-TEXT text-white py-3.5 text-xs uppercase tracking-[2px] font-semibold border border-TEXT hover:bg-neutral-800 active:scale-[0.99] transition-all duration-300 rounded-sm shadow-xs flex items-center justify-center space-x-2 disabled:opacity-40 disabled:hover:bg-TEXT cursor-pointer disabled:cursor-not-allowed focus:outline-none"
@@ -357,8 +357,8 @@ const ProductDetails = () => {
                         </div>
 
                     </div>
-                </div> 
-            
+                </div>
+
                 <div className="mt-16 md:mt-24 border-t border-gray-100 pt-12 space-y-12">
                     <div className="flex items-center space-x-3 pb-4 border-b border-gray-100">
                         <MessageSquare size={18} className="text-gray-400 stroke-[1.2]" />
@@ -368,9 +368,9 @@ const ProductDetails = () => {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-                
+
                         <div className="lg:col-span-2 space-y-6">
-                           
+
                             {!product.reviews || product.reviews.length === 0 ? (
                                 <div className="text-center py-12 bg-white border border-gray-100 rounded-sm p-6 shadow-2xs">
                                     <p className="text-xs uppercase tracking-[2px] text-gray-400 font-medium">Awaiting First Confession</p>

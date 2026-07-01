@@ -15,9 +15,9 @@ export const getAllMyCarts = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
     'cart/addToCart',
-    async ({ id, quantity }, thunkAPI) => {
+    async ({ id, quantity, isFromDetails = false }, thunkAPI) => {
         try {
-            const res = await api.post('/cart', { item: id, quantity });
+            const res = await api.post('/cart', { item: id, quantity, isFromDetails });
             return res.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.response?.data?.message || 'Add to Cart Error!');
@@ -64,22 +64,18 @@ export const clearAllCart = createAsyncThunk(
 
 const calculateCartTotals = (state) => {
     let subTotalSum = 0;
-    let totalPiecesCount = 0;
 
     state.cartItems.forEach(item => {
         const productPrice = item.item?.price || 0;
         const productQuantity = item.quantity || 1;
-
         subTotalSum += productPrice * productQuantity;
-        totalPiecesCount += productQuantity;
     });
 
     const calculatedTax = Math.round(subTotalSum * 0.15);
     const shippingFee = subTotalSum > 5000 || subTotalSum === 0 ? 0 : 250;
     const finalGrandTotal = subTotalSum + calculatedTax + shippingFee;
 
-
-    state.count = totalPiecesCount;
+    state.count = state.cartItems.length;
     state.totals.subTotal = subTotalSum;
     state.totals.taxPrice = calculatedTax;
     state.totals.shippingPrice = shippingFee;
@@ -147,10 +143,24 @@ const cartSlice = createSlice({
             })
             .addCase(addToCart.fulfilled, (state, action) => {
                 state.loading.mutation = false;
-                state.messages.mutation = action.payload.message || 'Product added to cart!';
+
+                if (action.payload.isDuplicate) {
+                    state.errors.mutation = action.payload.message;
+                    return;
+                }
+
+                state.messages.mutation = action.payload.message || 'Shopping bag verified.';
 
                 if (action.payload.cart) {
-                    state.cartItems.push(action.payload.cart);
+                    const incomingRecord = action.payload.cart;
+
+                    const existingItemIndex = state.cartItems.findIndex(item => item._id === incomingRecord._id);
+
+                    if (existingItemIndex !== -1) {
+                        state.cartItems[existingItemIndex] = incomingRecord;
+                    } else {
+                        state.cartItems.push(incomingRecord);
+                    }
                 }
                 calculateCartTotals(state);
             })

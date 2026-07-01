@@ -3,43 +3,43 @@ import Product from "../models/product.model.js";
 
 export const addToCart = async (req, res) => {
     try {
-        const { item, quantity } = req.body;
+        const { item, quantity, isFromDetails } = req.body;
 
         if (!item) {
-            return res.status(400).json({
-                success: false,
-                message: 'Item parameter token required!'
-            });
+            return res.status(400).json({ success: false, message: 'Item parameter token required!' });
         }
 
         const isItemExist = await Product.findById(item);
         if (!isItemExist) {
-            return res.status(404).json({
-                success: false,
-                message: 'Luxury fragrance not found in inventory stock vault.'
-            });
+            return res.status(404).json({ success: false, message: 'Luxury fragrance not found in inventory stock vault.' });
         }
 
         const purchaseQuantity = Number(quantity) || 1;
 
-        let cartItem = await Cart.findOne({
-            user: req.user.id,
-            item: item
-        });
+        let cartItem = await Cart.findOne({ user: req.user.id, item: item });
 
         if (cartItem) {
-            cartItem.quantity += purchaseQuantity;
-            await cartItem.save();
 
-            const populatedItem = await Cart.findById(cartItem._id).populate({
-                path: 'item',
-                select: 'title price image'
-            });
+            if (isFromDetails) {
+                cartItem.quantity = purchaseQuantity;
+                await cartItem.save();
+
+                const populatedItem = await Cart.findById(cartItem._id).populate({
+                    path: 'item', select: 'title price image'
+                });
+
+                return res.status(200).json({
+                    success: true,
+                    message: 'Shopping bag quantity updated successfully!',
+                    cart: populatedItem,
+                    isUpdated: true
+                });
+            }
 
             return res.status(200).json({
-                success: true,
-                message: `Luxury shopping bag updated! Added ${purchaseQuantity} more pieces.`,
-                cart: populatedItem
+                success: false,
+                isDuplicate: true,
+                message: 'This luxury fragrance is already present inside your shopping bag!'
             });
         }
 
@@ -52,8 +52,7 @@ export const addToCart = async (req, res) => {
         await newCart.save();
 
         const populatedNewItem = await Cart.findById(newCart._id).populate({
-            path: 'item',
-            select: 'title price image'
+            path: 'item', select: 'title price image'
         });
 
         return res.status(201).json({
