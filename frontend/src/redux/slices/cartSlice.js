@@ -208,9 +208,20 @@ const cartSlice = createSlice({
 
                 const updatedCartRecord = action.payload.cart;
                 if (updatedCartRecord) {
-                    state.cartItems = state.cartItems.map(item =>
-                        item._id === updatedCartRecord._id ? updatedCartRecord : item
-                    );
+                    state.cartItems = state.cartItems.map(item => {
+                        if (item._id === updatedCartRecord._id) {
+                            const safeItemDetails = typeof updatedCartRecord.item === 'object'
+                                ? updatedCartRecord.item
+                                : item.item;
+
+                            return {
+                                ...item,
+                                ...updatedCartRecord,
+                                item: safeItemDetails
+                            };
+                        }
+                        return item;
+                    });
                 }
                 calculateCartTotals(state);
             })

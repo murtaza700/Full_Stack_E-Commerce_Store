@@ -24,6 +24,7 @@ const Login = lazy(() => import('./pages/Login'));
 const Home = lazy(() => import('./pages/Home'));
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const ShoppingCart = lazy(() => import('./pages/ShoppingCart'));
 
 const App = () => {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ const App = () => {
             <Route index element={<Home />} />
             <Route path='products' element={<ProductsPage />} />
             <Route path='products/:id' element={<ProductDetail />} />
+            <Route path='cart' element={<ShoppingCart />} />
             <Route path='signup' element={<Signup />} />
             <Route path='login' element={<Login />} />
           </Route>

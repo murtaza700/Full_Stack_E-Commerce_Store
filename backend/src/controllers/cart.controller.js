@@ -142,10 +142,15 @@ export const updateCartQuantity = async (req, res) => {
 
         const updatedCartItem = await cartItem.save();
 
+        const fullyPopulatedCartRecord = await Cart.findById(updatedCartItem._id).populate({
+            path: 'item',
+            select: 'title price image'
+        });
+
         return res.status(200).json({
             success: true,
             message: 'Quantity updated successfully!',
-            cart: updatedCartItem
+            cart: fullyPopulatedCartRecord
         });
 
     } catch (err) {
