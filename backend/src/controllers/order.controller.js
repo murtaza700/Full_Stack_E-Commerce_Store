@@ -3,13 +3,10 @@ import Product from '../models/product.model.js';
 
 export const createOrder = async (req, res) => {
     try {
-        const { orderItems, address, city, postalCode, phone, email } = req.body;
+        const { orderItems, address, city, postalCode, phone, email, paymentMethod, transactionId } = req.body;
 
         if (!orderItems || orderItems.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'No order items found!'
-            });
+            return res.status(400).json({ success: false, message: 'No order items found!' });
         }
 
         let itemsPrice = 0;
@@ -17,14 +14,9 @@ export const createOrder = async (req, res) => {
 
         for (const item of orderItems) {
             const dbProduct = await Product.findById(item.item);
-
             if (!dbProduct) {
-                return res.status(404).json({
-                    success: false,
-                    message: `Product not found with id: ${item.item}`
-                });
+                return res.status(404).json({ success: false, message: `Product not found with id: ${item.item}` });
             }
-
             const itemTotalPrice = dbProduct.price * item.quantity;
             itemsPrice += itemTotalPrice;
 
@@ -34,11 +26,12 @@ export const createOrder = async (req, res) => {
             });
         }
 
-        const shippingPrice = itemsPrice > 500 ? 0 : 50;
+        const shippingPrice = itemsPrice > 5000 ? 0 : 250;
 
-        const taxPrice = Number((0.15 * itemsPrice).toFixed(2));
+        const taxPrice = Math.round(itemsPrice * 0.15);
 
         const totalPrice = itemsPrice + shippingPrice + taxPrice;
+        const simulatedCardTrigger = paymentMethod === 'Card';
 
         const newOrder = new Order({
             user: req.user.id,
@@ -48,27 +41,28 @@ export const createOrder = async (req, res) => {
             postalCode,
             phone,
             email,
+            paymentMethod: paymentMethod || 'COD',
+            transactionId: simulatedCardTrigger ? (transactionId || 'MOCK_PORTFOLIO_TXN_VALID') : null,
             taxPrice,
             shippingPrice,
             totalPrice,
-            isPaid: false,
-            paidAt: null
+            isPaid: simulatedCardTrigger,
+            paidAt: simulatedCardTrigger ? new Date() : null
         });
 
         const savedOrder = await newOrder.save();
 
         return res.status(201).json({
             success: true,
-            message: 'Order placed successfully!',
+            message: simulatedCardTrigger
+                ? 'Simulated Card Invoice Verified! Order logged to system registries.'
+                : 'Order committed to processing pipeline! Cash due upon delivery.',
             order: savedOrder
         });
 
     } catch (err) {
         console.error(`Order Creating Error! ${err}`);
-        return res.status(500).json({
-            success: false,
-            message: 'Server Error!'
-        });
+        return res.status(500).json({ success: false, message: 'Server Error!' });
     }
 }
 

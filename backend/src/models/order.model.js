@@ -44,6 +44,16 @@ const orderSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+    paymentMethod: {
+        type: String,
+        required: [true, 'Payment method mapping token is required!'],
+        enum: ['COD', 'Card'],
+        default: 'COD'
+    },
+    transactionId: {
+        type: String,
+        default: null
+    },
     orderStatus: {
         type: String,
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
