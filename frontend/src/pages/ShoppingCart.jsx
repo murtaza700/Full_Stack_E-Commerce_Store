@@ -116,7 +116,11 @@ const ShoppingCart = () => {
                             <span className="text-[10px] uppercase tracking-[2px] font-bold text-gray-400">Selected Formulation Details</span>
                             <button
                                 type="button"
-                                onClick={() => dispatch(clearAllCart())}
+                                onClick={() => {
+                                    if (window.confirm("Are you sure to clear your cart?")) {
+                                        dispatch(clearAllCart())
+                                    }
+                                }}
                                 className="text-[10px] uppercase tracking-[1px] text-gray-400 hover:text-red-500 transition-colors underline underline-offset-2 cursor-pointer focus:outline-none"
                             >
                                 Empty Bag Collection

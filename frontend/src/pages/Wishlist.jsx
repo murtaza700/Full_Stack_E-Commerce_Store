@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ShoppingBag, Loader2, LogIn, Trash2, SlidersHorizontal, ArrowLeft } from 'lucide-react';
 
-import { getMyWishlist, toggleWishlistAction, clearWishlistError, clearWishlistMessage } from '../redux/slices/wishlistSlice';
+import { getMyWishlist, toggleWishlistAction, clearWishlistError, clearWishlistMessage, clearWishlist } from '../redux/slices/wishlistSlice';
 import { addToCart, clearCartError, clearCartMessage } from '../redux/slices/cartSlice';
 import { showErrorToast, showSuccessToast } from '../helper/MyToast';
 
@@ -34,11 +34,12 @@ const Wishlist = () => {
             showErrorToast(wishError.toggle || 'Failed to update favorite collection.');
             dispatch(clearWishlistError('toggle'));
         }
-        if (wishMessage?.toggle) {
-            showSuccessToast(wishMessage.toggle);
-            dispatch(clearWishlistMessage('toggle'));
-        }
 
+        if (wishMessage?.toggle || wishMessage?.clearAll) {
+            showSuccessToast(wishMessage.toggle || wishMessage.clearAll || 'Wishlist cleared successfully.');
+            dispatch(clearWishlistMessage('toggle'));
+            if (wishMessage?.clearAll) dispatch(clearWishlistMessage('clearAll'));
+        }
 
         if (cartError?.mutation) {
             showErrorToast(cartError.mutation || 'Cart addition execution failed.');
@@ -48,7 +49,7 @@ const Wishlist = () => {
             showSuccessToast(cartMessage.mutation);
             dispatch(clearCartMessage());
         }
-    }, [dispatch, wishError?.fetch, wishError?.toggle, wishMessage?.toggle, cartError?.mutation, cartMessage?.mutation]);
+    }, [dispatch, wishError?.fetch, wishError?.toggle, wishMessage?.toggle, cartError?.mutation, cartMessage?.mutation, wishMessage.clearAll]);
 
     if (!isAuthenticated) {
         return (
@@ -140,12 +141,21 @@ const Wishlist = () => {
                 <div className="space-y-6">
                     <div className="flex justify-between items-center pb-3 border-b border-gray-100">
                         <span className="text-[10px] uppercase tracking-[2px] font-bold text-gray-400">Archived Portfolio</span>
-                        <Link
-                            to="/products"
-                            className="text-[10px] uppercase tracking-[1px] text-gray-400 hover:text-TEXT transition-colors underline underline-offset-2 cursor-pointer focus:outline-none"
+
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (window.confirm("Are you entirely certain you wish to empty your curated favorites archive?")) {
+                                    dispatch(clearWishlist());
+                                }
+                            }}
+                            className="flex items-center gap-2 text-[10px] uppercase tracking-[1px] text-gray-400 hover:text-red-500 transition-colors border border-gray-400 hover:border-red-500 rounded-md bg-red-500/1 hover:bg-red-500/2 px-3 py-2 cursor-pointer focus:outline-none"
                         >
-                            Continue Browsing Collection
-                        </Link>
+                            Clear All Favorites
+                            <Trash2 size={15} />
+                        </button>
+
                     </div>
 
 
