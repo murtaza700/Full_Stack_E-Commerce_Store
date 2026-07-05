@@ -66,11 +66,12 @@ const CheckoutPage = () => {
             return;
         }
 
-        if (!cartLoading?.fetchAll && (!cartItems || cartItems.length === 0)) {
+        if (!orderSuccessfulState && !cartLoading?.fetchAll && (!cartItems || cartItems.length === 0)) {
             showErrorToast('Your luxury shopping bag configuration vault registries are currently clear.');
             navigate('/cart');
         }
-    }, [isAuthenticated, cartItems, cartLoading?.fetchAll, navigate]);
+
+    }, [isAuthenticated, cartItems, cartLoading?.fetchAll, orderSuccessfulState, navigate]);
 
 
     useEffect(() => {
