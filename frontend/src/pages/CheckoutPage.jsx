@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -8,6 +8,8 @@ import {
     ArrowLeft, Loader2, Landmark, Smartphone, User, Mail,
     Phone, MapPin, Building, Hash, Download
 } from 'lucide-react';
+
+import { downloadSimulatedPdfInvoice } from '../utils/invoiceGenerator';
 
 import { createOrder, clearOrderError } from '../redux/slices/orderSlice';
 import { getAllMyCarts, clearAllCart } from '../redux/slices/cartSlice';
@@ -18,9 +20,10 @@ const PAYFAST_SANDBOX_API_KEY = import.meta.env.VITE_PAYFAST_API_KEY || "PK_SAND
 const CheckoutPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const { isAuthenticated, user: currentUser } = useSelector((state) => state.auth);
     const { cartItems, totals, loading: cartLoading } = useSelector((state) => state.cart);
-    const { loading: orderLoading, errors: orderError, success: orderSuccess, currentOrder } = useSelector((state) => state.orders || state.order || { loading: {} });
+    const { loading: orderLoading, errors: orderError } = useSelector((state) => state.orders || state.order || { loading: {} });
 
     const { register, handleSubmit, watch, formState: { errors: formInputErrors }, setValue } = useForm({
         defaultValues: {
@@ -34,11 +37,9 @@ const CheckoutPage = () => {
     });
 
     const currentTypedName = watch("fullName");
-    const watchedCardNumberValue = watch("cardNumberField") || "";
-
+    const watchedCardNumberField = watch("cardNumberField") || "";
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [selectedWalletProvider, setSelectedWalletProvider] = useState('EasyPaisa');
-
 
     const [cardData, setCardData] = useState({
         cardNumber: '',
@@ -46,7 +47,6 @@ const CheckoutPage = () => {
         cardCvv: '',
         cardHolder: ''
     });
-
 
     const [walletData, setWalletData] = useState({
         walletNumber: '',
@@ -70,7 +70,6 @@ const CheckoutPage = () => {
             showErrorToast('Your luxury shopping bag configuration vault registries are currently clear.');
             navigate('/cart');
         }
-
     }, [isAuthenticated, cartItems, cartLoading?.fetchAll, navigate]);
 
 
@@ -90,7 +89,7 @@ const CheckoutPage = () => {
     }, [orderError?.mutation, dispatch]);
 
     useEffect(() => {
-        const rawDigits = cardData.cardNumber.replace(/\s+/g, '');
+        const rawDigits = watchedCardNumberField.replace(/\s+/g, '');
         if (rawDigits.length === 0) {
             setDetectedCardType('unknown');
             return;
@@ -105,12 +104,10 @@ const CheckoutPage = () => {
         } else {
             setDetectedCardType('unknown');
         }
-    }, [cardData.cardNumber]);
-
+    }, [watchedCardNumberField]);
 
     useEffect(() => {
         const cleanNumber = walletData.walletNumber.replace(/\s+/g, '');
-
 
         if (cleanNumber.length === 11 && cleanNumber.startsWith('03')) {
             setWalletData(prev => ({ ...prev, isWalletResolving: true, isWalletVerified: false }));
@@ -131,70 +128,6 @@ const CheckoutPage = () => {
         }
     }, [walletData.walletNumber, selectedWalletProvider, currentTypedName]);
 
-    const downloadSimulatedPdfInvoice = (orderRecord) => {
-        if (!orderRecord) return;
-        const invoiceTitle = "SCENTSÔ - LA MAISON OLFACTIVE";
-        const orderIdString = `Ticket ID: ${orderRecord._id || 'MOCK-ORDER-999'}`;
-        const timestampString = `Issued: ${new Date().toLocaleString()}`;
-
-
-        let itemRowsText = "";
-        cartItems.forEach((item, index) => {
-            const product = item.item;
-            const rowTotal = (product?.price || 0) * (item.quantity || 1);
-            itemRowsText += `${index + 1}. ${product?.title || 'Fragrance'} [Qty: ${item.quantity}] - PKR ${rowTotal.toLocaleString()}\n`;
-        });
-
-        const fullDocumentBodyText = `
-==================================================
-        ${invoiceTitle}
-        AUTOMATED ORDER INVOICE SLIP
-==================================================
-${orderIdString}
-${timestampString}
---------------------------------------------------
-CLIENT IDENTIFICATION CREDENTIALS:
-Name: ${orderRecord.user?.fullName || orderRecord.email?.split('@')[0].toUpperCase() || "ELITE COLLECTOR"}
-Email: ${orderRecord.email || "N/A"}
-Phone: ${orderRecord.phone || "N/A"}
-Destination: ${orderRecord.address || "N/A"}, ${orderRecord.city || "N/A"}
---------------------------------------------------
-ITEMIZED RESERVATION ENTRIES:
-${itemRowsText}
---------------------------------------------------
-FINANCIAL AUDITING STATEMENTS:
-Subtotal: PKR ${totals.subTotal?.toLocaleString()}
-GST/VAT Tax (15%): PKR ${totals.taxPrice?.toLocaleString()}
-Delivery Charges: PKR ${totals.shippingPrice === 0 ? 'FREE' : `PKR ${totals.shippingPrice}`}
-GRAND TOTAL DUE: PKR ${totals.grandTotal?.toLocaleString()}
---------------------------------------------------
-PAYMENT RECOGNITION:
-Method: ${paymentMethod}
-Status: ${paymentMethod === 'Card' || paymentMethod === 'Wallet' ? 'SIMULATED PAID & CAPTURED' : 'CASH DUE UPON DELIVERY'}
-==================================================
-⚠️ SYSTEM NOTIFICATION NOTICE STATE:
-THIS IS A DATABASE TEST MODE SANDBOX TICKET TRANSACTION.
-NO REAL MONEY HAS BEEN CHARGED OR TRANSFER OPERATION FIRED.
-DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
-==================================================
-`;
-
-
-        const blobElement = new Blob([fullDocumentBodyText], { type: 'text/plain;charset=utf-8' });
-        const temporaryUrl = URL.createObjectURL(blobElement);
-
-        const virtualAnchor = document.createElement('a');
-        virtualAnchor.href = temporaryUrl;
-        virtualAnchor.download = `Scentso_Invoice_${orderRecord._id || 'Test'}.txt`;
-        document.body.appendChild(virtualAnchor);
-        virtualAnchor.click();
-        document.body.removeChild(virtualAnchor);
-        URL.revokeObjectURL(temporaryUrl);
-        showSuccessToast("Luxury portfolio invoice downloaded successfully to your filesystem storage device!");
-    };
-
-
-
     const handlePlaceOrderSubmit = async (data) => {
 
         if (paymentMethod === 'Card') {
@@ -204,7 +137,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                 return;
             }
         }
-
 
         if (paymentMethod === 'Wallet') {
             if (!walletData.isWalletVerified) {
@@ -217,7 +149,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
             item: cartRowItem.item?._id || cartRowItem.item,
             quantity: cartRowItem.quantity
         }));
-
 
         const finalOrderPayload = {
             orderItems: compiledBackendOrderItems,
@@ -236,10 +167,16 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
 
         try {
             const actionResult = await dispatch(createOrder(finalOrderPayload)).unwrap();
+
             if (actionResult && actionResult.success) {
                 const serverSavedOrder = actionResult.order || actionResult;
                 setCreatedOrderData(serverSavedOrder);
                 setOrderSuccessfulState(true);
+
+                setTimeout(() => {
+                    downloadSimulatedPdfInvoice(serverSavedOrder, cartItems, totals, paymentMethod);
+                }, 0);
+
                 showSuccessToast("Luxury fragrance portfolio checkout transaction captured seamlessly!");
                 dispatch(clearAllCart());
             }
@@ -247,14 +184,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
             showErrorToast(typeof serverError === 'string' ? serverError : "Order generation script mismatch.");
         }
     };
-
-    // if (paymentMethod === 'Card') {
-    //     const cleanCardDigits = cardData.cardNumber.replace(/\s+/g, '');
-    //     if (cleanCardDigits.length < 12 || !cardData.cardExpiry || cardData.cardCvv.length < 3) {
-    //         showErrorToast("Simulated Card processing error! Verify your credentials template numbers.");
-    //         return;
-    //     }
-    // }
 
     if (orderSuccessfulState) {
         return (
@@ -285,11 +214,10 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                         </p>
                     </div>
 
-
                     <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                         <button
                             type="button"
-                            onClick={() => downloadSimulatedPdfInvoice(createdOrderData)}
+                            onClick={() => downloadSimulatedPdfInvoice(createdOrderData, cartItems, totals, paymentMethod)}
                             className="bg-TEXT text-white px-5 py-3 text-[10px] uppercase tracking-[2px] font-semibold border border-TEXT hover:bg-neutral-800 active:scale-95 transition-all duration-300 rounded-sm shadow-xs flex items-center justify-center space-x-2 cursor-pointer focus:outline-none"
                         >
                             <Download size={12} />
@@ -310,12 +238,14 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
     return (
         <div className="bg-[#FBFBFB] min-h-screen text-TEXT antialiased select-none font-sans pb-24 selection:bg-TEXT selection:text-white">
 
+
             <div className="bg-white border-b border-gray-100 py-12 text-center">
                 <h1 className="text-xl md:text-2xl font-bold tracking-[3px] uppercase text-TEXT">Secure Verification</h1>
                 <p className="text-[10px] tracking-[2px] text-gray-400 uppercase font-light mt-1.5">
                     Finalize your custom olfactory reservation details profile metrics
                 </p>
             </div>
+
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 md:mt-12">
 
@@ -327,7 +257,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
 
 
                 <form onSubmit={handleSubmit(handlePlaceOrderSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-14 items-start">
-
 
 
                     <div className="lg:col-span-7 space-y-8">
@@ -342,7 +271,7 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                     <label htmlFor="fullName" className="text-[10px] uppercase tracking-[1px] font-medium text-gray-400">
                                         Receiver Full Name:
                                     </label>
-                                    <div className="relative flex items-center border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
+                                    <div className="relative flex flex-col border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
                                         <input
                                             type="text"
                                             id="fullName"
@@ -352,7 +281,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                             className="bg-transparent text-xs text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-light uppercase"
                                             required
                                         />
-
                                         {formInputErrors.fullName && <p className="text-[10px] text-red-500 mt-1">{formInputErrors.fullName.message}</p>}
                                     </div>
                                 </div>
@@ -361,7 +289,7 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                     <label htmlFor="email" className="text-[10px] uppercase tracking-[1px] font-medium text-gray-400">
                                         Secure Notification Email:
                                     </label>
-                                    <div className="relative flex items-center border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
+                                    <div className="relative flex flex-col border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
                                         <input
                                             type="email"
                                             id="email"
@@ -375,30 +303,32 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                     </div>
                                 </div>
                             </div>
-
                             <div className="flex flex-col space-y-1.5 text-xs pt-1">
                                 <label htmlFor="phone" className="text-[10px] uppercase tracking-[1px] font-medium text-gray-400">
                                     Mobile Delivery Contact Number:
                                 </label>
-                                <div className="relative flex items-center border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
-                                    <Phone size={13} className="text-gray-300 mr-2" />
-                                    <input
-                                        type="tel"
-                                        id="phone"
-                                        name="phone"
-                                        {...register("phone", {
-                                            required: "Mobile number is requested",
-                                            minLength: { value: 11, message: "Phone number must be exactly 11 digits" }
-                                        })}
-                                        placeholder="E.G., 03001234567..."
-                                        maxLength={11}
-                                        className="bg-transparent text-xs text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-mono tracking-wide"
-                                        required
-                                    />
+                                <div className="relative flex flex-col border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
+                                    <div className="flex items-center">
+                                        <Phone size={13} className="text-gray-300 mr-2" />
+                                        <input
+                                            type="tel"
+                                            id="phone"
+                                            name="phone"
+                                            {...register("phone", {
+                                                required: "Mobile number is requested",
+                                                minLength: { value: 11, message: "Phone number must be exactly 11 digits" }
+                                            })}
+                                            placeholder="E.G., 03001234567..."
+                                            maxLength={11}
+                                            className="bg-transparent text-xs text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-mono tracking-wide"
+                                            required
+                                        />
+                                    </div>
                                     {formInputErrors.phone && <p className="text-[10px] text-red-500 mt-1">{formInputErrors.phone.message}</p>}
                                 </div>
                             </div>
                         </div>
+
 
                         <div className="bg-white border border-gray-100 p-5 md:p-6 rounded-sm shadow-2xs space-y-5">
                             <h3 className="text-xs font-bold tracking-[2px] uppercase text-TEXT pb-2 border-b border-gray-50 flex items-center gap-2">
@@ -409,7 +339,7 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                 <label htmlFor="address" className="text-[10px] uppercase tracking-[1px] font-medium text-gray-400">
                                     Complete Mailing Physical Address:
                                 </label>
-                                <div className="relative flex items-center border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
+                                <div className="relative flex flex-col border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
                                     <input
                                         type="text"
                                         id="address"
@@ -422,33 +352,34 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                     {formInputErrors.address && <p className="text-[10px] text-red-500 mt-1">{formInputErrors.address.message}</p>}
                                 </div>
                             </div>
-
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                                 <div className="flex flex-col space-y-1.5 text-xs">
                                     <label htmlFor="city" className="text-[10px] uppercase tracking-[1px] font-medium text-gray-400">
                                         Provincial City Allocation:
                                     </label>
-                                    <div className="relative flex items-center border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300 w-full">
-                                        <Building size={13} className="text-gray-300 mr-2" />
-                                        <select
-                                            id="city"
-                                            name="city"
-                                            {...register("city", { required: "City allocation is required" })}
-                                            className="bg-transparent text-xs text-TEXT w-full outline-none focus:outline-none cursor-pointer uppercase font-light"
-                                            required
-                                        >
-                                            <option value="" disabled className="text-gray-300">Select Cargo Hub City...</option>
-                                            <option value="Karachi">Karachi Hub</option>
-                                            <option value="Lahore">Lahore Hub</option>
-                                            <option value="Islamabad">Islamabad Capital</option>
-                                            <option value="Rawalpindi">Rawalpindi Division</option>
-                                            <option value="Faisalabad">Faisalabad Textile Zone</option>
-                                            <option value="Multan">Multan City</option>
-                                            <option value="Peshawar">Peshawar Valley</option>
-                                            <option value="Quetta">Quetta Enclave</option>
-                                            <option value="Sialkot">Sialkot Export Sector</option>
-                                            <option value="Gujranwala">Gujranwala Region</option>
-                                        </select>
+                                    <div className="relative flex flex-col border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300 w-full">
+                                        <div className="flex items-center w-full">
+                                            <Building size={13} className="text-gray-300 mr-2" />
+                                            <select
+                                                id="city"
+                                                name="city"
+                                                {...register("city", { required: "City allocation is required" })}
+                                                className="bg-transparent text-xs text-TEXT w-full outline-none focus:outline-none cursor-pointer uppercase font-light"
+                                                required
+                                            >
+                                                <option value="" disabled className="text-gray-300">Select Cargo Hub City...</option>
+                                                <option value="Karachi">Karachi Hub</option>
+                                                <option value="Lahore">Lahore Hub</option>
+                                                <option value="Islamabad">Islamabad Capital</option>
+                                                <option value="Rawalpindi">Rawalpindi Division</option>
+                                                <option value="Faisalabad">Faisalabad Textile Zone</option>
+                                                <option value="Multan">Multan City</option>
+                                                <option value="Peshawar">Peshawar Valley</option>
+                                                <option value="Quetta">Quetta Enclave</option>
+                                                <option value="Sialkot">Sialkot Export Sector</option>
+                                                <option value="Gujranwala">Gujranwala Region</option>
+                                            </select>
+                                        </div>
                                         {formInputErrors.city && <p className="text-[10px] text-red-500 mt-1">{formInputErrors.city.message}</p>}
                                     </div>
                                 </div>
@@ -457,21 +388,24 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                     <label htmlFor="postalCode" className="text-[10px] uppercase tracking-[1px] font-medium text-gray-400">
                                         Postal Routing Zip Index (Optional):
                                     </label>
-                                    <div className="relative flex items-center border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
-                                        <Hash size={13} className="text-gray-300 mr-2" />
-                                        <input
-                                            type="text"
-                                            id="postalCode"
-                                            name="postalCode"
-                                            {...register("postalCode")}
-                                            placeholder="E.G., 54000..."
-                                            className="bg-transparent text-xs text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-mono tracking-wide"
-                                        />
+                                    <div className="relative flex flex-col border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300">
+                                        <div className="flex items-center">
+                                            <Hash size={13} className="text-gray-300 mr-2" />
+                                            <input
+                                                type="text"
+                                                id="postalCode"
+                                                name="postalCode"
+                                                {...register("postalCode")}
+                                                placeholder="E.G., 54000..."
+                                                className="bg-transparent text-xs text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-mono tracking-wide"
+                                            />
+                                        </div>
                                         {formInputErrors.postalCode && <p className="text-[10px] text-red-500 mt-1">{formInputErrors.postalCode.message}</p>}
                                     </div>
                                 </div>
                             </div>
                         </div>
+
 
                         <div className="bg-white border border-gray-100 p-5 md:p-6 rounded-sm shadow-2xs space-y-6">
                             <div className="pb-2 border-b border-gray-50">
@@ -483,9 +417,7 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                 </p>
                             </div>
 
-
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-
                                 <button
                                     type="button"
                                     onClick={() => setPaymentMethod('COD')}
@@ -521,7 +453,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                     <Smartphone size={16} className={paymentMethod === 'Wallet' ? 'text-white' : 'text-gray-400'} />
                                     <span className="text-[10px] uppercase tracking-[1.5px]">Mobile Wallet</span>
                                 </button>
-
                             </div>
 
                             <div className="pt-2">
@@ -613,7 +544,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                             transition={{ duration: 0.25 }}
                                             className="p-4 bg-neutral-50 border border-gray-100/60 rounded-xs space-y-4"
                                         >
-
                                             <div className="flex items-center space-x-4 pb-2 border-b border-gray-200/60 text-xs">
                                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[1px]">Wallet Gateway:</span>
                                                 <div className="flex gap-3 font-semibold">
@@ -686,11 +616,11 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                         </div>
                     </div>
 
+
                     <div className="lg:col-span-5 w-full lg:sticky lg:top-24 bg-white border border-gray-100 rounded-sm p-5 md:p-6 space-y-6 shadow-2xs">
                         <h3 className="text-xs font-bold tracking-[2px] uppercase text-TEXT pb-3 border-b border-gray-50 flex items-center gap-2">
                             <ShoppingBag size={13} className="text-gray-400" /> Bag Reservation Review
                         </h3>
-
 
                         <div className="max-h-40 overflow-y-auto space-y-3 pr-1 border-b border-gray-50 pb-4 custom-scrollbar">
                             {cartItems.map((row) => {
@@ -713,7 +643,6 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                 );
                             })}
                         </div>
-
 
                         <div className="space-y-4 text-xs font-sans border-b border-gray-50 pb-4">
                             <div className="flex justify-between items-center text-gray-500 font-light">
@@ -746,6 +675,7 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                             <span className="font-mono text-base tracking-tight text-TEXT">PKR {totals.grandTotal?.toLocaleString()}</span>
                         </div>
 
+
                         <button
                             type="submit"
                             disabled={orderLoading?.mutation || cartLoading?.fetchAll}
@@ -777,7 +707,7 @@ DEVELOPER PORTFOLIO SIMULATION BUILT FUNCTIONAL - 2026.
                                 <span className="tracking-wide">Environment: Sandbox Dev Simulation Mode Active</span>
                             </div>
                             <p className="text-[9px] text-gray-400 font-light leading-relaxed font-sans lowercase">
-                                API Key: {PAYFAST_SANDBOX_API_KEY.substring(0, 10)}... Loaded securely from VITE environment settings matrix context.
+                                API Key: {String(PAYFAST_SANDBOX_API_KEY || '').substring(0, 10)}... Loaded securely from VITE environment settings matrix context.
                             </p>
                         </div>
 
