@@ -38,10 +38,8 @@ const sliderData = [
 ];
 
 const HeroSlider = () => {
-    // ✅ FIXING ANIMATION BUG: Tracks active slide matrix index to re-trigger Framer Motion on every change smoothly
     const [currentActiveIndex, setCurrentActiveIndex] = useState(0);
 
-    // Luxury animation configurations presets definitions
     const premiumTextFadeUpVariants = {
         hidden: { opacity: 0, y: 25 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } }
@@ -53,7 +51,7 @@ const HeroSlider = () => {
                 modules={[Autoplay, Navigation, Pagination, EffectFade]}
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                speed={1200} // Slowed down speed for a highly graceful transition feel
+                speed={1200}
                 loop={true}
                 autoplay={{ delay: 6000, disableOnInteraction: false }}
                 pagination={{ clickable: true, el: '.custom-pagination' }}
@@ -61,12 +59,12 @@ const HeroSlider = () => {
                     nextEl: '.swiper-btn-next',
                     prevEl: '.swiper-btn-prev'
                 }}
-                // ✅ TRIGGER INTERCEPTION: Fires state updates forcing animation cycles to rerun seamlessly
+
                 onSlideChange={(swiper) => setCurrentActiveIndex(swiper.realIndex)}
                 className="w-full h-full"
             >
                 {sliderData.map((slide, slideIdx) => {
-                    // Determines explicitly if this loop item matches currently visible screen index variables
+
                     const isThisSlideCurrentlyActive = currentActiveIndex === slideIdx;
 
                     return (
@@ -74,23 +72,20 @@ const HeroSlider = () => {
                             key={slide.id}
                             className="relative w-full h-full flex items-center"
                         >
-                            {/* Visual Asset Background Wrapper Desk */}
+
                             <div className="absolute inset-0 w-full h-full overflow-hidden">
                                 <img
                                     src={slide.image}
                                     alt={slide.title}
-                                    // Slow fluid parallax style zoom effect mapping standard
-                                    className={`w-full h-full object-cover object-center transition-transform duration-[6000ms] ease-out ${isThisSlideCurrentlyActive ? 'scale-100' : 'scale-105'
+                                    className={`w-full h-full object-cover object-center transition-transform duration-6000 ease-out ${isThisSlideCurrentlyActive ? 'scale-100' : 'scale-105'
                                         }`}
                                 />
-                                {/* Refined High-End Dark Vignette Veil Grid Protection Overlay */}
-                                <div className="absolute inset-0 bg-neutral-950/40 via-neutral-900/20 to-transparent bg-gradient-to-r md:bg-gradient-to-r md:from-black/60 md:via-neutral-950/20" />
+
+                                <div className="absolute inset-0 bg-neutral-950/40 via-neutral-900/20 to-transparent bg-linear-to-r md:bg-linear-to-r md:from-black/60 md:via-neutral-950/20" />
                             </div>
 
-                            {/* Narrative Typography Central Alignment Workspace Card */}
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full h-full flex flex-col justify-center text-white">
                                 <motion.div
-                                    // Custom control properties linking directly into active tracker indexes
                                     initial="hidden"
                                     animate={isThisSlideCurrentlyActive ? "visible" : "hidden"}
                                     variants={{
@@ -98,7 +93,7 @@ const HeroSlider = () => {
                                     }}
                                     className="max-w-xl space-y-4 md:space-y-5"
                                 >
-                                    {/* Muted Premium Luxury Brass Gold Color Tag Selector */}
+
                                     <motion.p
                                         variants={premiumTextFadeUpVariants}
                                         className="text-[10px] sm:text-xs uppercase tracking-[4px] font-bold text-[#C5A880]"
@@ -131,7 +126,7 @@ const HeroSlider = () => {
                                             <span>Discover Formulation</span>
                                             <ArrowRight
                                                 size={12}
-                                                className="group-hover:translate-x-2 transition-transform duration-300 stroke-[2]"
+                                                className="group-hover:translate-x-2 transition-transform duration-300 stroke-2"
                                             />
                                         </Link>
                                     </motion.div>
@@ -141,7 +136,6 @@ const HeroSlider = () => {
                     );
                 })}
 
-                {/* Minimalist circular outline navigation trigger buttons controls rows */}
                 <button className="swiper-btn-prev hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 border border-white/10 hover:border-white/40 text-white rounded-full items-center justify-center transition-all bg-black/5 hover:bg-black/20 backdrop-blur-xs cursor-pointer focus:outline-none">
                     <ChevronLeft size={18} className="stroke-[1.5]" />
                 </button>
@@ -150,7 +144,6 @@ const HeroSlider = () => {
                     <ChevronRight size={18} className="stroke-[1.5]" />
                 </button>
 
-                {/* Unified Custom Pagination Indicators Node Anchor */}
                 <div className="custom-pagination absolute bottom-8 left-0 right-0 z-20 flex justify-center space-x-2.5" />
             </Swiper>
         </div>
