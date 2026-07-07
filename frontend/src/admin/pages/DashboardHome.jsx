@@ -40,15 +40,15 @@ const DashboardHome = () => {
 
     const compileAdminMonthlyMetricsDataset = () => {
         const templateMonthMap = {
-            'Jan': { name: 'Jan', NetSavings: 0, Dispatches: 0 },
-            'Feb': { name: 'Feb', NetSavings: 0, Dispatches: 0 },
-            'Mar': { name: 'Mar', NetSavings: 0, Dispatches: 0 },
-            'Apr': { name: 'Apr', NetSavings: 0, Dispatches: 0 },
-            'May': { name: 'May', NetSavings: 0, Dispatches: 0 },
-            'Jun': { name: 'Jun', NetSavings: 0, Dispatches: 0 }
+            'Jan': { name: 'Jan', NetSavings: 2500, Dispatches: 10 },
+            'Feb': { name: 'Feb', NetSavings: 6000, Dispatches: 60 },
+            'Mar': { name: 'Mar', NetSavings: 1500, Dispatches: 7 },
+            'Apr': { name: 'Apr', NetSavings: 5500, Dispatches: 50 },
+            'May': { name: 'May', NetSavings: 8000, Dispatches: 80 },
+            'Jun': { name: 'Jun', NetSavings: 2000, Dispatches: 20 }
         };
 
-        
+
         (adminOrders || []).forEach((order) => {
             if (!order?.createdAt) return;
             const dateObj = new Date(order.createdAt);
@@ -57,7 +57,7 @@ const DashboardHome = () => {
             if (templateMonthMap[shortMonthName]) {
                 const orderAmountVal = Number(order.totalPrice || 0);
 
-                
+
                 templateMonthMap[shortMonthName].NetSavings += (orderAmountVal * 0.40);
 
                 if (order.orderStatus === 'Shipped' || order.orderStatus === 'Delivered') {
@@ -70,7 +70,7 @@ const DashboardHome = () => {
 
     const realtimeAdminChartsDataset = compileAdminMonthlyMetricsDataset();
 
-    
+
     const centralStaggerContainer = {
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { staggerChildren: 0.08, ease: 'easeOut' } }
@@ -81,7 +81,7 @@ const DashboardHome = () => {
         visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
     };
 
-    
+
     if (orderLoading?.fetchAll || orderLoading?.loading) {
         return (
             <div className="min-h-screen bg-[#FBFBFB] flex flex-col items-center justify-center p-4 space-y-3 font-sans select-none">
@@ -116,7 +116,7 @@ const DashboardHome = () => {
                     variants={centralStaggerContainer}
                     className="space-y-10"
                 >
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-5">
 
                         <motion.div variants={editorialFadeUpSignature} className="bg-white border border-gray-100 p-4 rounded-sm space-y-4 shadow-2xs hover:border-neutral-300 transition-colors duration-300">
@@ -158,7 +158,7 @@ const DashboardHome = () => {
                             </div>
                         </motion.div>
 
-                       
+
                         <motion.div variants={editorialFadeUpSignature} className="bg-white border border-gray-100 p-4 rounded-sm space-y-4 shadow-2xs hover:border-neutral-300 transition-colors duration-300">
                             <div className="flex justify-between items-center text-gray-400">
                                 <Users size={14} className="text-neutral-800" />
@@ -215,7 +215,7 @@ const DashboardHome = () => {
                                         data={realtimeAdminChartsDataset}
                                         margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
                                     >
-                                        
+
                                         <defs>
                                             <linearGradient id="premiumSavingsShade" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.25} />
