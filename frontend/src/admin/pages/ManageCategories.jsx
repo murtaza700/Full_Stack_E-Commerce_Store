@@ -11,8 +11,6 @@ const ManageCategories = () => {
 
     const { categories, loading: catLoading, errors: categoryError, messages } = useSelector(state => state.categories);
 
-    console.log(1)
-
     const {
         register,
         handleSubmit,
