@@ -5,6 +5,11 @@ import { Loader2 } from 'lucide-react';
 import { showErrorToast, showSuccessToast } from '../../helper/MyToast';
 import { useDispatch, useSelector } from 'react-redux';
 import ProductCard from '../../components/ProductCard';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 import { clearFeaturedError, getFeaturedProducts } from '../../redux/slices/featuredSlice';
 import { toggleWishlistAction, clearWishlistError, clearWishlistMessage, getMyWishlist } from '../../redux/slices/wishlistSlice';
@@ -14,15 +19,14 @@ const FeaturedProducts = () => {
     const dispatch = useDispatch();
 
     const { isAuthenticated } = useSelector(state => state.auth);
-    const { featured, loading: featuredLoading, errors: featureError } = useSelector(state => state.featured);
-    const { errors: cartError, messages: cartMessage, btnLoading: cartBtnLoading } = useSelector(state => state.cart);
-    const { wishlistItems, errors: wishError, messages: wishMessage, btnLoading: wishBtnLoading } = useSelector(state => state.wishlist);
+    const { featured = [], loading: featuredLoading, errors: featureError } = useSelector(state => state.featured || { featured: [] });
+    const { errors: cartError, messages: cartMessage, btnLoading: cartBtnLoading } = useSelector(state => state.cart || {});
+    const { wishlistItems = [], errors: wishError, messages: wishMessage, btnLoading: wishBtnLoading } = useSelector(state => state.wishlist || { wishlistItems: [] });
 
     useEffect(() => {
         dispatch(getFeaturedProducts());
 
-
-        if (isAuthenticated && wishlistItems.length === 0) {
+        if (isAuthenticated && wishlistItems?.length === 0) {
             dispatch(getMyWishlist());
         }
     }, [dispatch, isAuthenticated]);
@@ -46,7 +50,6 @@ const FeaturedProducts = () => {
         }
     }, [dispatch, wishError?.toggle, wishMessage?.toggle]);
 
-
     useEffect(() => {
         if (cartError?.mutation) {
             showErrorToast(cartError.mutation || 'Login requested to save shopping bag properties!');
@@ -58,7 +61,6 @@ const FeaturedProducts = () => {
             dispatch(clearCartMessage('mutation'));
         }
     }, [dispatch, cartError?.mutation, cartMessage?.mutation]);
-
 
     const handleWishlistClick = (productId) => {
         if (!isAuthenticated) {
@@ -89,40 +91,69 @@ const FeaturedProducts = () => {
         <section className="bg-white select-none py-16 md:py-24 px-4 sm:px-6 lg:px-8 border-t border-gray-100">
             <div className="max-w-7xl mx-auto space-y-12">
 
-
+                {/* Section Header Ribbon Row */}
                 <div className="flex flex-col sm:flex-row justify-between items-baseline gap-4">
                     <div className="space-y-2">
                         <p className="text-[10px] tracking-[3px] uppercase font-semibold text-[#D4AF37]">The Elite Selection</p>
                         <h2 className="text-xl font-bold tracking-[2px] uppercase text-TEXT">Best Sellers</h2>
                     </div>
-                    <Link to="/products" className="text-xs uppercase tracking-[2px] font-semibold text-TEXT hover:text-gray-400 underline underline-offset-4 transition-colors">
+                    <Link to="/products" className="text-xs uppercase tracking-[2px] font-semibold text-TEXT hover:text-gray-400 underline underline-offset-4 transition-colors focus:outline-none">
                         View Complete Range
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-                    {featured.map((item, idx) => {
+                {/* INFINITE AUTOPLAYING LUXURY SWIPER SLIDER SYSTEM */}
+                {featured && featured.length > 0 && (
+                    <div className="w-full relative admin-custom-swiper-container">
+                        <Swiper
+                            modules={[Autoplay, Pagination]}
+                            spaceBetween={24}
+                            loop={featured.length >= 4}
+                            autoplay={{
+                                delay: 3500,
+                                disableOnInteraction: false,
+                                pauseOnMouseEnter: true
+                            }}
+                            pagination={{
+                                clickable: true,
+                                dynamicBullets: true
+                            }}
 
-                        if (!item || !item.product) return null;
+                            breakpoints={{
+                                320: { slidesPerView: 1, spaceBetween: 16 },
+                                640: { slidesPerView: 2, spaceBetween: 20 },
+                                1024: { slidesPerView: 4, spaceBetween: 24 }
+                            }}
+                            className="pb-14 w-full"
+                        >
+                            {featured.map((item, idx) => {
+                                if (!item || !item.product) return null;
+                                const perfume = item.product;
 
-                        const perfume = item.product;
+                                return (
+                                    <SwiperSlide key={item._id || idx} className="h-auto">
+                                        <div className="h-full py-1 px-0.5">
 
-                        return (
-                            <ProductCard
-                                key={item._id}
-                                perfume={perfume}
-                                idx={idx}
-                                isProductInWishlist={Array.isArray(wishlistItems) && wishlistItems.some(
-                                    (wishItem) => (wishItem?.item?._id || wishItem?.item || wishItem) === perfume._id
-                                )}
-                                isWishLoading={wishBtnLoading?.[perfume._id]}
-                                isCartLoading={cartBtnLoading?.[perfume._id]}
-                                onWishlistToggle={(id) => handleWishlistClick(id)}
-                                onAddToCart={(id) => handleCartClick({ id, quantity: 1 })}
-                            />
-                        );
-                    })}
-                </div>
+                                            <ProductCard
+                                                perfume={perfume}
+                                                idx={idx}
+                                                isProductInWishlist={Array.isArray(wishlistItems) && wishlistItems.some(
+                                                    (wishItem) => (wishItem?.item?._id || wishItem?.item || wishItem) === perfume._id
+                                                )}
+                                                isWishLoading={wishBtnLoading?.[perfume._id]}
+                                                isCartLoading={cartBtnLoading?.[perfume._id]}
+                                                onWishlistToggle={(id) => handleWishlistClick(id)}
+
+                                                onAddToCart={(id) => handleCartClick({ id, quantity: 1 })}
+                                            />
+                                        </div>
+                                    </SwiperSlide>
+                                );
+                            })}
+                        </Swiper>
+
+                    </div>
+                )}
 
                 {(!featured || featured.length === 0) && (
                     <div className="flex flex-col items-center justify-center py-20 border border-dashed border-gray-200 rounded-sm">

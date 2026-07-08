@@ -42,3 +42,27 @@ button {
   background: #D4AF37 !important;
   width: 24px;
 }
+
+
+
+
+.admin-custom-swiper-container .swiper {
+  padding-bottom: 40px !important;
+}
+
+.admin-custom-swiper-container .swiper-pagination-bullet {
+  background: #111111 !important;
+  opacity: 0.15 !important;
+  transition: all 0.3s ease;
+}
+
+.admin-custom-swiper-container .swiper-pagination-bullet-active {
+  background: #111111 !important;
+  opacity: 1 !important;
+  width: 14px !important;
+  border-radius: 4px !important;
+}
+
+.admin-custom-swiper-container .swiper-pagination-bullets {
+  bottom: 4px !important;
+}
