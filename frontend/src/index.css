@@ -66,3 +66,18 @@ button {
 .admin-custom-swiper-container .swiper-pagination-bullets {
   bottom: 4px !important;
 }
+
+
+
+.custom-sidebar-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.custom-sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

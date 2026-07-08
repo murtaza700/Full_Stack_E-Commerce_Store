@@ -21,19 +21,18 @@ const AdminSidebar = () => {
     ];
 
     return (
-        <aside className="w-64 bg-TEXT text-white flex flex-col justify-between p-6 select-none hidden md:flex border-r border-neutral-800 shrink-0 min-h-screen">
-            <div>
+        <aside className="w-64 bg-TEXT text-white flex flex-col justify-between p-6 select-none hidden md:flex border-r border-neutral-800 shrink-0 h-full">
 
-                <div className="mb-10 text-center md:text-left">
+            <div className="flex flex-col min-h-0 flex-1">
 
+                <div className="mb-10 text-center md:text-left shrink-0">
                     <Link to="/admin" className="font-bold text-xl tracking-[4px] uppercase text-white hover:text-gray-300 transition-colors focus:outline-none">
                         Scentsô Panel
                     </Link>
                     <p className="text-[9px] uppercase tracking-[2px] text-neutral-500 mt-1 font-light">Boutique Console</p>
                 </div>
 
-
-                <nav className="space-y-2">
+                <nav className="space-y-2 flex-1 overflow-y-auto overflow-x-hidden pr-1 custom-sidebar-scrollbar">
                     {navItems.map((item, index) => (
                         <NavLink
                             key={index}
@@ -47,14 +46,13 @@ const AdminSidebar = () => {
                             }
                         >
                             <span className="shrink-0">{item.icon}</span>
-                            <span>{item.name}</span>
+                            <span className="truncate">{item.name}</span>
                         </NavLink>
                     ))}
                 </nav>
             </div>
 
-
-            <Link to="/" className="flex items-center space-x-2 text-xs text-neutral-400 hover:text-white transition-colors border-t border-neutral-800 pt-4 font-light tracking-wide focus:outline-none group">
+            <Link to="/" className="flex items-center space-x-2 text-xs text-neutral-400 hover:text-white transition-colors border-t border-neutral-800 pt-4 font-light tracking-wide focus:outline-none group shrink-0 mt-4">
                 <ArrowLeft size={14} className="transform group-hover:-translate-x-0.5 transition-transform duration-300" />
                 <span>Return to Store</span>
             </Link>
