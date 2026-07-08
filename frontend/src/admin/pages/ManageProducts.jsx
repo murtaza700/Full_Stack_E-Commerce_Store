@@ -106,7 +106,7 @@ const ManageProducts = () => {
                     type="submit"
                     className="bg-TEXT text-white px-4 py-2 text-[10px] uppercase tracking-[1.5px] font-bold rounded-sm border border-TEXT hover:bg-neutral-800 transition-colors focus:outline-none cursor-pointer"
                 >
-                    Query Vault
+                    Search
                 </button>
             </form>
 

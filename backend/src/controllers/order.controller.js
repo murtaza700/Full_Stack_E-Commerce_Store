@@ -189,40 +189,116 @@ export const updateOrderStatusAdmin = async (req, res) => {
 
 export const getAllOrdersAdmin = async (req, res) => {
     try {
-        const orders = await Order.find({})
+        const { page = 1, limit = 10, search = '', status = '', sort = '-createdAt' } = req.query;
+
+        const numericPageNumber = Number(page) || 1;
+        const numericLimitSize = Number(limit) || 10;
+        const structuralSkipOffset = (numericPageNumber - 1) * numericLimitSize;
+
+        let databaseFilterQuery = {};
+        if (search && search.trim() !== '') {
+            const cleanSearchToken = search.trim();
+
+            if (cleanSearchToken.match(/^[0-9a-fA-F]{24}$/)) {
+                databaseFilterQuery._id = cleanSearchToken;
+            } else {
+                databaseFilterQuery.$or = [
+                    { email: { $regex: cleanSearchToken, $options: 'i' } },
+                    { city: { $regex: cleanSearchToken, $options: 'i' } },
+                    { phone: { $regex: cleanSearchToken, $options: 'i' } }
+                ];
+            }
+        }
+
+        if (status && status.trim() !== '' && status !== 'All') {
+            databaseFilterQuery.orderStatus = status;
+        }
+
+
+        const totalMatchingDocumentsInDb = await Order.countDocuments(databaseFilterQuery);
+        const calculatedTotalPagesCount = Math.ceil(totalMatchingDocumentsInDb / numericLimitSize) || 1;
+
+
+        const queriedOrdersPayload = await Order.find(databaseFilterQuery)
             .populate('user', 'fullName email')
             .populate({
                 path: 'orderItems.item',
                 select: 'title price image'
             })
-            .sort('-createdAt');
+            .sort(sort)
+            .skip(structuralSkipOffset)
+            .limit(numericLimitSize);
 
-        if (!orders || orders.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'Order not founds',
-                orders: []
-            });
-        }
 
-        const totalAmountEarned = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+        const fullOrdersCapitalAggregate = await Order.find(databaseFilterQuery);
+        const totalAmountEarnedAcrossQuery = fullOrdersCapitalAggregate.reduce((accumulatedSum, orderNode) => {
+            if (orderNode.orderStatus?.toLowerCase() === 'cancelled') return accumulatedSum;
+            return accumulatedSum + (orderNode.totalPrice || 0);
+        }, 0);
 
         return res.status(200).json({
             success: true,
-            message: 'All system orders fetched successfully!',
-            count: orders.length,
-            totalRevenue: Number(totalAmountEarned.toFixed(2)),
-            orders
+            message: 'All system admin orders filtered and fetched successfully!',
+            count: totalMatchingDocumentsInDb,
+            totalRevenue: Number(totalAmountEarnedAcrossQuery.toFixed(2)),
+            meta: {
+                totalOrders: totalMatchingDocumentsInDb,
+                totalPages: calculatedTotalPagesCount,
+                currentPage: numericPageNumber,
+                limit: numericLimitSize
+            },
+            orders: queriedOrdersPayload
         });
 
     } catch (err) {
-        console.error(`GetALlOrdersAdmin Error! ${err}`);
+        console.error(`GetALlOrdersAdmin Filters Repaired Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Server processing corridor exception error.'
         });
     }
-}
+};
+
+export const getOrderDetailsAdmin = async (req, res) => {
+    try {
+        const targetOrderIdToken = req.params.id;
+
+        const singleOrderMatchNode = await Order.findById(targetOrderIdToken)
+            .populate('user', 'fullName email')
+            .populate({
+                path: 'orderItems.item',
+                select: 'title price image category descriptions description'
+            });
+
+        if (!singleOrderMatchNode) {
+            return res.status(404).json({
+                success: false,
+                message: 'Targeted invoice manifest reference profile not found inside database indices bounds.'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Target administration acquisition document resolved successfully!',
+            order: singleOrderMatchNode
+        });
+
+    } catch (err) {
+        console.error(`Backend Error inside getOrderDetailsAdmin: ${err}`);
+
+        if (err.kind === 'ObjectId') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid Mongoose hexadecimal identification token format criteria.'
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server terminal endpoint data acquisition matrix exception.'
+        });
+    }
+};
 
 export const deleteOrderAdmin = async (req, res) => {
     try {

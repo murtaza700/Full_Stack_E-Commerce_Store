@@ -45,9 +45,11 @@ export const getMySingleOrder = createAsyncThunk(
 
 export const getAllOrdersAdmin = createAsyncThunk(
     'orders/getAllOrdersAdmin',
-    async (_, thunkAPI) => {
+    async ({ page = 1, limit = 10, search = '', status = '', sort = '-createdAt' } = {}, thunkAPI) => {
         try {
-            const response = await api.get('/orders/admin/all-orders');
+            const response = await api.get(
+                `/orders/admin/all-orders?page=${page}&limit=${limit}&search=${search}&status=${status}&sort=${sort}`
+            );
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
@@ -85,6 +87,20 @@ export const deleteOrderAdmin = createAsyncThunk(
     }
 );
 
+export const getOrderDetailsAdminThunk = createAsyncThunk(
+    'orders/getOrderDetailsAdminThunk',
+    async (targetOrderIdToken, thunkAPI) => {
+        try {
+            const response = await api.get(`/orders/admin/all-orders/${targetOrderIdToken}`);
+            return response.data;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(
+                err.response?.data?.message || 'Failed to resolve specialized administrative target invoice sheet entries.'
+            );
+        }
+    }
+);
+
 
 const initialState = {
     orders: [],
@@ -92,6 +108,7 @@ const initialState = {
     currentOrder: null,
     totalRevenue: 0,
     count: 0,
+    meta: null,
     loading: {
         fetchAll: false,
         fetchOne: false,
@@ -179,6 +196,7 @@ const orderSlice = createSlice({
                 state.loading.fetchAll = false;
                 state.adminOrders = action.payload.orders || [];
                 state.totalRevenue = action.payload.totalRevenue || 0;
+                state.meta = action.payload.meta || { totalPages: 1, currentPage: 1 };
             })
             .addCase(getAllOrdersAdmin.rejected, (state, action) => {
                 state.loading.fetchAll = false;
@@ -243,7 +261,22 @@ const orderSlice = createSlice({
                 state.btnLoading[id] = false;
                 state.loading.mutation = false;
                 state.errors.mutation = action.payload;
-            });
+            })
+
+
+            .addCase(getOrderDetailsAdminThunk.pending, (state) => {
+                state.loading.fetchOne = true;
+                state.errors.fetchOne = null;
+                state.currentOrder = null;
+            })
+            .addCase(getOrderDetailsAdminThunk.fulfilled, (state, action) => {
+                state.loading.fetchOne = false;
+                state.currentOrder = action.payload.order || action.payload;
+            })
+            .addCase(getOrderDetailsAdminThunk.rejected, (state, action) => {
+                state.loading.fetchOne = false;
+                state.errors.fetchOne = action.payload;
+            })
     }
 });
 

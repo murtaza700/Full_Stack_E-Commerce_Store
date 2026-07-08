@@ -11,6 +11,7 @@ router.get('/my-orders', authMiddleware, orderController.getMyAllOrders);
 router.get('/my-orders/:id', authMiddleware, orderController.getMySingleOrder);
 
 router.get('/admin/all-orders', authMiddleware, roleChecker, orderController.getAllOrdersAdmin);
+router.get('/admin/all-orders/:id', authMiddleware, roleChecker, orderController.getOrderDetailsAdmin);
 router.delete('/admin/all-orders/:id', authMiddleware, roleChecker, orderController.deleteOrderAdmin);
 router.patch('/admin/all-orders/:id', authMiddleware, roleChecker, orderController.updateOrderStatusAdmin);
 
