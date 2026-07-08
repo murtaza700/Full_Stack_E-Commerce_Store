@@ -6,14 +6,16 @@ import {
     Receipt,
     FolderHeart,
     ArrowLeft,
-    Users
+    Users,
+    Sparkles
 } from 'lucide-react';
 
 const AdminSidebar = () => {
     const navItems = [
         { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={16} /> },
-        { name: 'Manage Products', path: '/admin/products', icon: <ShoppingBag size={16} /> },
         { name: 'Manage Orders', path: '/admin/orders', icon: <Receipt size={16} /> },
+        { name: 'Manage Products', path: '/admin/products', icon: <ShoppingBag size={16} /> },
+        { name: 'Manage Featureds', path: '/admin/featured', icon: <Sparkles size={16} /> },
         { name: 'Manage Categories', path: '/admin/categories', icon: <FolderHeart size={16} /> },
         { name: 'Manage Users', path: '/admin/users', icon: <Users size={16} /> },
     ];
