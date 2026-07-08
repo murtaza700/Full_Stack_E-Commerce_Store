@@ -3,9 +3,9 @@ import api from '../../lib/api';
 
 export const fetchAllUsersAdmin = createAsyncThunk(
     'adminUsers/fetchAll',
-    async (_, thunkAPI) => {
+    async ({ search = '', sort = '-createdAt' } = {}, thunkAPI) => {
         try {
-            const serverResponse = await api.get('/users');
+            const serverResponse = await api.get(`/users?search=${search}&sort=${sort}`);
             return serverResponse.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(err.response?.data?.message || "Platform users acquisition cluster route error.");
@@ -50,7 +50,7 @@ const allUsersSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-        
+
             .addCase(fetchAllUsersAdmin.pending, (state) => {
                 state.loading.fetchAll = true;
                 state.errors.fetchAll = null;
@@ -64,7 +64,7 @@ const allUsersSlice = createSlice({
                 state.errors.fetchAll = action.payload;
             })
 
-            
+
             .addCase(deleteUserAccountAdmin.pending, (state) => {
                 state.loading.deleteAction = true;
                 state.errors.deleteAction = null;

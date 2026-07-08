@@ -2,15 +2,36 @@ import User from '../models/user.model.js'
 
 export const getAllUsersAdmin = async (req, res) => {
     try {
-        const allRegisteredUsers = await User.find().select('-password').sort({ createdAt: -1 });
+        const { search = '', sort = '-createdAt' } = req.query;
+
+        let userFilterQuery = {};
+
+        if (search && search.trim() !== '') {
+            const cleanSearchToken = search.trim();
+
+            if (cleanSearchToken.match(/^[0-9a-fA-F]{24}$/)) {
+                userFilterQuery._id = cleanSearchToken;
+            } else {
+
+                userFilterQuery.$or = [
+                    { fullName: { $regex: cleanSearchToken, $options: 'i' } },
+                    { email: { $regex: cleanSearchToken, $options: 'i' } }
+                ];
+            }
+        }
+
+        const filteredRegisteredUsers = await User.find(userFilterQuery)
+            .select('-password')
+            .sort(sort);
 
         return res.status(200).json({
             success: true,
-            count: allRegisteredUsers.length,
-            users: allRegisteredUsers
+            count: filteredRegisteredUsers.length,
+            users: filteredRegisteredUsers
         });
+
     } catch (serverError) {
-        console.error("Backend Error inside getAllUsersAdmin:", serverError);
+        console.error("Backend Error inside filtered getAllUsersAdmin:", serverError);
         return res.status(500).json({
             success: false,
             message: "Internal server data acquisition matrix error. Awaiting node logs triage."
