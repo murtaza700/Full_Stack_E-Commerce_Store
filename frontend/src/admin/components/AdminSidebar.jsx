@@ -22,7 +22,7 @@ const AdminSidebar = ({ closeMobileMenu }) => {
     ];
 
     return (
-        <aside className="w-64 bg-TEXT text-white flex flex-col justify-between p-6 select-none border-r border-neutral-800 shrink-0 h-full">
+        <aside className="w-70 bg-TEXT text-white flex flex-col justify-between p-6 select-none border-r border-neutral-800 shrink-0 h-full">
 
             <div className="flex flex-col min-h-0 flex-1">
 

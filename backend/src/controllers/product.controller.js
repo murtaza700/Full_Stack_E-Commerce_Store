@@ -5,6 +5,7 @@ import Product from '../models/product.model.js';
 import Category from '../models/category.model.js';
 import imageUploader from '../utils/imageUploader.js';
 import imageDelete from '../utils/imageDelete.js';
+import convertToWebpBuffer from '../utils/webpConverter.js';
 
 export const createProduct = async (req, res) => {
     try {
@@ -26,7 +27,6 @@ export const createProduct = async (req, res) => {
         }
 
         const cleanDescription = description?.replace(/<[^>]*>/g, '').trim();
-
         if (!cleanDescription) {
             return res.status(400).json({
                 success: false,
@@ -34,7 +34,9 @@ export const createProduct = async (req, res) => {
             });
         }
 
-        const result = await imageUploader(file.buffer.toString('base64'));
+        const processedWebpBuffer = await convertToWebpBuffer(file.buffer);
+        const base64WebPString = processedWebpBuffer.toString('base64');
+        const result = await imageUploader(base64WebPString);
 
         const newProduct = new Product({
             title,
@@ -57,7 +59,7 @@ export const createProduct = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(`Create Product Error: ${err}`);
+        console.error(`Create Product WebP Fix Error: ${err}`);
         return res.status(500).json({
             success: false,
             message: 'Server Error!!!'
@@ -67,11 +69,9 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-
         const updatedData = { ...req.body };
 
         const oldProduct = await Product.findById(req.params.id);
-
         if (!oldProduct) {
             return res.status(404).json({
                 success: false,
@@ -79,10 +79,12 @@ export const updateProduct = async (req, res) => {
             });
         }
 
-
         if (req.file) {
-            const result = await imageUploader(req.file.buffer.toString('base64'));
+            const processedWebpBuffer = await convertToWebpBuffer(req.file.buffer);
 
+            const base64WebPString = processedWebpBuffer.toString('base64');
+
+            const result = await imageUploader(base64WebPString);
             updatedData.image = {
                 url: result.url,
                 fileId: result.fileId
@@ -91,7 +93,6 @@ export const updateProduct = async (req, res) => {
             if (oldProduct.image && typeof oldProduct.image === 'object' && oldProduct.image.fileId) {
                 imageDelete(oldProduct.image.fileId);
             }
-
         }
 
         const product = await Product.findByIdAndUpdate(
@@ -109,15 +110,15 @@ export const updateProduct = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Product updated!',
+            message: 'Product updated with optimized WebP asset metrics!',
             product
         });
 
     } catch (err) {
-        console.error(err);
+        console.error(`Update Product WebP Fix Corridor Error: ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Server terminal endpoint processing conflict.'
         });
     }
 }
@@ -349,86 +350,6 @@ export const searchAndFilterProducts = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Server Error!' });
     }
 }
-
-
-
-// export const searchAndFilterProducts = async (req, res) => {
-//     try {
-//         const { keyword, category, minPrice, maxPrice, ratings, page, limit, sort } = req.query;
-
-//         const pageNumber = Number(page) || 1;
-//         const limitNumber = Number(limit) || 10;
-//         const skip = (pageNumber - 1) * limitNumber;
-
-//         let sortOption = '-createdAt';
-//         if (sort === 'price_low') sortOption = 'price';
-//         if (sort === 'price_high') sortOption = '-price';
-
-//         let queryObject = {};
-
-//         if (keyword) {
-//             queryObject.title = {
-//                 $regex: keyword,
-//                 $options: 'i'
-//             };
-//         }
-
-//         if (category) {
-//             queryObject.category = category;
-//         }
-
-//         if (minPrice || maxPrice) {
-//             queryObject.price = {};
-
-//             if (minPrice) {
-//                 queryObject.price.$gte = Number(minPrice);
-//             }
-
-//             if (maxPrice) {
-//                 queryObject.price.$lte = Number(maxPrice);
-//             }
-//         }
-
-//         if (ratings) {
-//             queryObject.ratings = { $gte: Number(ratings) }
-//         }
-
-//         const totalProducts = await Product.countDocuments(queryObject);
-
-//         const products = await Product.find(queryObject)
-//             .populate('category', '-_id -createdBy -updatedAt -createdAt')
-//             .sort(sortOption)
-//             .skip(skip)
-//             .limit(limitNumber);
-
-//         if (products.length === 0) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'Products not found!'
-//             });
-//         }
-
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Products found!',
-//             meta: {
-//                 totalProducts,
-//                 totalPages: Math.ceil(totalProducts / limitNumber),
-//                 currentPage: pageNumber,
-//                 limit: limitNumber
-//             },
-//             count: products.length,
-//             products
-//         });
-
-//     } catch (err) {
-//         console.error(`Product Search Error! ${err}`);
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Server Error!'
-//         });
-//     }
-// }
 
 export const createProductReview = async (req, res) => {
     try {
