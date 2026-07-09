@@ -41,7 +41,7 @@ export const createSliderAdmin = async (req, res) => {
             })
         }
 
-        const convertImage = await webpConverter(file.buffer());
+        const convertImage = await webpConverter(file.buffer);
         const base64 = convertImage.toString('base64')
 
         const result = await imageUploader(base64);
@@ -85,7 +85,7 @@ export const updateSliderAdmin = async (req, res) => {
         }
 
         if (file) {
-            const convertImage = await webpConverter(file.buffer())
+            const convertImage = await webpConverter(file.buffer)
             const base64 = await convertImage.toString('base64')
             const result = await imageUploader(base64)
 
