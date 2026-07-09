@@ -7,6 +7,7 @@ import featuredReducer from './slices/featuredSlice'
 import cartReducer from './slices/cartSlice'
 import orderReducer from './slices/orderSlice'
 import allUsersReducer from './slices/allUsersSlice'
+import sliderReducer from './slices/sliderSlice'
 
 const store = configureStore({
     reducer: {
@@ -17,7 +18,8 @@ const store = configureStore({
         'featured': featuredReducer,
         'cart': cartReducer,
         'orders': orderReducer,
-        'adminUsers': allUsersReducer
+        'adminUsers': allUsersReducer,
+        'sliders': sliderReducer
     }
 });
 
