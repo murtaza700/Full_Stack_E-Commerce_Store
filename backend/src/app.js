@@ -10,6 +10,7 @@ import cartRoutes from './routes/cart.routes.js';
 import wishlistRoutes from './routes/wishlist.routes.js';
 import featuredRoutes from './routes/featured.routes.js';
 import adminUsersRoutes from './routes/adminUsers.routes.js';
+import sliderRoutes from './routes/slider.routes.js';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/wishlist', wishlistRoutes);
 app.use('/api/v1/featured', featuredRoutes);
 app.use('/api/v1/users', adminUsersRoutes);
+app.use('/api/v1/sliders', sliderRoutes);
 
 app.get('/', (req, res) => {
     res.json({
