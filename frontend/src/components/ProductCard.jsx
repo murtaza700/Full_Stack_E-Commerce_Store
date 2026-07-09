@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Heart, ShoppingBag, Loader2 } from 'lucide-react';
+import { Heart, ShoppingBag, Loader2, FastForward } from 'lucide-react';
 
 const ProductCard = ({
     perfume,
@@ -64,9 +64,9 @@ const ProductCard = ({
                                 if (e) { e.preventDefault(); e.stopPropagation(); }
                                 onAddToCart(perfume._id, e);
                             }}
-                            className="p-2.5 bg-TEXT text-white rounded-full hover:bg-neutral-800 transition-colors shadow-2xs cursor-pointer focus:outline-none flex items-center justify-center min-w-9 min-h-9"
+                            className={`p-2.5 bg-TEXT text-white rounded-full hover:bg-neutral-800 transition-colors shadow-2xs cursor-pointer focus:outline-none flex items-center justify-center min-w-9 min-h-9 ${perfume.stock === false && 'bg-neutral-800 opacity-80'}`}
                             title="Add to Luxury Bag"
-                            disabled={isCartLoading}
+                            disabled={isCartLoading || perfume.stock === false}
                         >
                             {isCartLoading ? (
                                 <Loader2 size={14} className="animate-spin text-white" />
@@ -128,8 +128,8 @@ const ProductCard = ({
                                     if (e) { e.preventDefault(); e.stopPropagation(); }
                                     onAddToCart(perfume._id, e);
                                 }}
-                                className="sm:hidden p-2 rounded-full bg-TEXT text-white hover:bg-neutral-800 transition-colors cursor-pointer focus:outline-none flex items-center justify-center"
-                                disabled={isCartLoading}
+                                className={`sm:hidden p-2 rounded-full bg-TEXT text-white hover:bg-neutral-800 transition-colors cursor-pointer focus:outline-none flex items-center justify-center ${perfume.stock === false && 'bg-neutral-800 opacity-80'}`}
+                                disabled={isCartLoading || perfume.stock === false}
                             >
                                 {isCartLoading ? (
                                     <Loader2 size={13} className="animate-spin text-white" />

@@ -9,9 +9,11 @@ import ProtectedRoutesAdmin from './components/ProtectedRoutesAdmin';
 import Spiner from './components/Spiner';
 import PageScrollTop from './components/PageScrollTop';
 
+// Layouts
 const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
 const UserLayout = lazy(() => import('./layouts/UserLayout'));
 
+// Admin Pages
 const AddProduct = lazy(() => import('./admin/pages/AddProduct'));
 const DashboardHome = lazy(() => import('./admin/pages/DashboardHome'));
 const ManageProducts = lazy(() => import('./admin/pages/ManageProducts'));
@@ -23,8 +25,11 @@ const ManageUsers = lazy(() => import('./admin/pages/ManageUsers'));
 const ManageFeatured = lazy(() => import('./admin/pages/ManageFeatured'));
 const ManageSliders = lazy(() => import('./admin/pages/ManageSliders'));
 
+//Auth Pages
 const Signup = lazy(() => import('./pages/Signup'));
 const Login = lazy(() => import('./pages/Login'));
+
+// User Pages
 const Home = lazy(() => import('./pages/Home'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
@@ -35,6 +40,7 @@ const Wishlist = lazy(() => import('./pages/Wishlist'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const OrderDetails = lazy(() => import('./pages/OrderDetails'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App = () => {
   const dispatch = useDispatch();
@@ -74,8 +80,11 @@ const App = () => {
             <Route path='checkout' element={<CheckoutPage />} />
             <Route path='profile' element={<ProfilePage />} />
             <Route path='order/:id' element={<OrderDetails />} />
+
             <Route path='signup' element={<Signup />} />
             <Route path='login' element={<Login />} />
+
+            <Route path='*' element={<NotFound />} />
           </Route>
 
           <Route path='/admin' element={
