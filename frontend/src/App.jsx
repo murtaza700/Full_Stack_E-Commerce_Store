@@ -24,6 +24,7 @@ const AdminOrderDetails = lazy(() => import('./admin/pages/AdminOrderDetails'));
 const ManageUsers = lazy(() => import('./admin/pages/ManageUsers'));
 const ManageFeatured = lazy(() => import('./admin/pages/ManageFeatured'));
 const ManageSliders = lazy(() => import('./admin/pages/ManageSliders'));
+const AdminNotFound = lazy(() => import('./admin/pages/AdminNotFound'));
 
 //Auth Pages
 const Signup = lazy(() => import('./pages/Signup'));
@@ -102,6 +103,8 @@ const App = () => {
             <Route path='users' element={<ManageUsers />} />
             <Route path='featured' element={<ManageFeatured />} />
             <Route path='sliders' element={<ManageSliders />} />
+
+            <Route path='*' element={<AdminNotFound />} />
           </Route>
         </Routes>
       </Suspense>
