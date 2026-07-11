@@ -39,4 +39,10 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get("/ip", async (req, res) => {
+  const response = await fetch("https://api.ipify.org?format=json");
+  const data = await response.json();
+  res.json(data);
+});
+
 export default app;
