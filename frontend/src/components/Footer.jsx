@@ -78,8 +78,15 @@ const Footer = () => {
                         &copy; {currentYear} Scentsô Luxury Maison. All rights reserved.
                     </p>
                     <p className="font-mono text-gray-300">
-                        Designed with absolute sillage
+                        Designed by
+                        <a
+                            className='text-TEXT underline'
+                            href="mailto:murtazakasur7@gmail.com?subject=Website%20Inquiry&body=Hello%20Ghulam Murtaza,%0A%0AI%20would%20like%20to%20discuss..."
+                        >
+                            Ghulam Murtaza
+                        </a>
                     </p>
+                    <Link className='font-mono underline text-TEXT' to={'/admin'}>Admin</Link>
                 </div>
 
             </div>
