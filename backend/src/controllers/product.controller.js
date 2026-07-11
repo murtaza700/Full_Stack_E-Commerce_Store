@@ -227,56 +227,56 @@ export const getSingleProduct = async (req, res) => {
 
 }
 
-export const getProductsByCategory = async (req, res) => {
-    try {
+// export const getProductsByCategory = async (req, res) => {
+//     try {
 
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const sort = req.query.sort || '-createdAt';
-        const skip = (page - 1) * limit;
+//         const page = Number(req.query.page) || 1;
+//         const limit = Number(req.query.limit) || 10;
+//         const sort = req.query.sort || '-createdAt';
+//         const skip = (page - 1) * limit;
 
-        let sortOption = '-createdAt';
-        if (sort === 'price_low') sortOption = 'price';
-        if (sort === 'price_high') sortOption = '-price';
+//         let sortOption = '-createdAt';
+//         if (sort === 'price_low') sortOption = 'price';
+//         if (sort === 'price_high') sortOption = '-price';
 
-        const queryFilter = { category: req.params.category };
+//         const queryFilter = { category: req.params.category };
 
-        const totalProducts = await Product.countDocuments(queryFilter);
+//         const totalProducts = await Product.countDocuments(queryFilter);
 
-        const products = await Product.find(queryFilter)
-            .populate('category', '-_id -createdAt -updatedAt -createdBy')
-            .sort(sortOption)
-            .skip(skip)
-            .limit(limit);
+//         const products = await Product.find(queryFilter)
+//             .populate('category', '-_id -createdAt -updatedAt -createdBy')
+//             .sort(sortOption)
+//             .skip(skip)
+//             .limit(limit);
 
-        if (products.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No products found for this category!'
-            });
-        }
+//         if (products.length === 0) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'No products found for this category!'
+//             });
+//         }
 
-        return res.status(200).json({
-            success: true,
-            message: 'Products found!',
-            meta: {
-                totalProducts,
-                totalPages: Math.ceil(totalProducts / limit),
-                currentPage: page,
-                limit
-            },
-            count: products.length,
-            products
-        });
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Products found!',
+//             meta: {
+//                 totalProducts,
+//                 totalPages: Math.ceil(totalProducts / limit),
+//                 currentPage: page,
+//                 limit
+//             },
+//             count: products.length,
+//             products
+//         });
 
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Server Error!"
-        });
-    }
-}
+//     } catch (err) {
+//         console.error(err);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Server Error!"
+//         });
+//     }
+// }
 
 export const searchAndFilterProducts = async (req, res) => {
     try {

@@ -22,7 +22,7 @@ router.post('/:id/reviews', authMiddleware, productController.createProductRevie
 /* Public Route */
 router.get('/', productController.getAllProducts);
 router.get('/search', productController.searchAndFilterProducts);
-router.get('/category/:category', productController.getProductsByCategory);
+// router.get('/category/:category', productController.getProductsByCategory);
 router.get('/:id', productController.getSingleProduct);
 
 export default router;

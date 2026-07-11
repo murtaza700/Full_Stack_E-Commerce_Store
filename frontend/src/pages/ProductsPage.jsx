@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Search, Loader2, X, SlidersHorizontal } from 'lucide-react';
 
-import FilterSidebar from '../components/FilterSidebar';
+import FilterSidebar from '../components/FilterSideBar';
 import ProductCard from '../components/ProductCard';
 
 import { getAllProducts } from '../redux/slices/productSlice';
