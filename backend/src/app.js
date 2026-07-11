@@ -15,7 +15,7 @@ import sliderRoutes from './routes/slider.routes.js';
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
     credentials: true
 }));
 app.use(cookieParser());
@@ -40,9 +40,9 @@ app.get('/', (req, res) => {
 });
 
 app.get("/ip", async (req, res) => {
-  const response = await fetch("https://api.ipify.org?format=json");
-  const data = await response.json();
-  res.json(data);
+    const response = await fetch("https://api.ipify.org?format=json");
+    const data = await response.json();
+    res.json(data);
 });
 
 export default app;
