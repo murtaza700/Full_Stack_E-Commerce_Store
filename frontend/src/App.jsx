@@ -47,9 +47,6 @@ const App = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector(state => state.auth);
 
-  const API = import.meta.env.VITE_BASE_API;
-  console.log(API)
-
   useEffect(() => {
     dispatch(loadUser());
   }, [dispatch]);
