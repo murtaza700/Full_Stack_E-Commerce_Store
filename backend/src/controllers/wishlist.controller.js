@@ -8,7 +8,7 @@ export const toggleWishlist = async (req, res) => {
         if (!item) {
             return res.status(400).json({
                 success: false,
-                message: 'Product ID is required!'
+                message: 'Product is required!'
             });
         }
 
@@ -25,7 +25,7 @@ export const toggleWishlist = async (req, res) => {
             await wishlistRecord.deleteOne();
             return res.status(200).json({
                 success: true,
-                message: 'Product removed from wishlist!',
+                message: 'Removed from wishlist!',
                 isWishlisted: false
             });
         }
@@ -39,7 +39,7 @@ export const toggleWishlist = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'Item added to wishlist!',
+            message: 'Added to wishlist!',
             item: newWish,
             isWishlisted: true
         });
@@ -48,7 +48,7 @@ export const toggleWishlist = async (req, res) => {
         console.error(`Toggle Wishlist Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -65,7 +65,7 @@ export const getAllWishlist = async (req, res) => {
         if (!allWish || allWish.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'Nothing in Wishlist!',
+                message: 'Your wishlist is empty!',
                 count: 0,
                 allWish: []
             });
@@ -73,7 +73,7 @@ export const getAllWishlist = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'All wishlist found!',
+            message: 'Wishlist items retrieved!',
             count: allWish.length,
             allWish
         });
@@ -82,7 +82,7 @@ export const getAllWishlist = async (req, res) => {
         console.error(`Get All Wishlist Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -93,14 +93,14 @@ export const clearWishlist = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Your Wishlist is clear!'
+            message: 'Wishlist cleared successfully!'
         });
 
     } catch (err) {
         console.error(`Clear Wishlist Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }

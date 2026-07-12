@@ -19,7 +19,7 @@ export const createCategory = async (req, res) => {
         if (isCategoryExist) {
             return res.status(400).json({
                 success: false,
-                message: 'Category with this name already exists!'
+                message: 'Category name already exists!'
             });
         }
 
@@ -33,15 +33,15 @@ export const createCategory = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'Category Created!',
+            message: 'Category created successfully!',
             category: newCategory
         });
 
     } catch (err) {
-        console.error(`Category Creation Error! ${err}`);
+        console.log(`Category creation error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -64,7 +64,7 @@ export const deleteCategory = async (req, res) => {
         if (productsCount > 0) {
             return res.status(400).json({
                 success: false,
-                message: `Cannot delete category! This category contains ${productsCount} active products. Please delete or reassign those products first.`
+                message: `Cannot delete category. It contains ${productsCount} active products!`
             });
         }
 
@@ -72,14 +72,14 @@ export const deleteCategory = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Category Deleted Successfully!'
+            message: 'Category deleted successfully!'
         });
 
     } catch (err) {
-        console.error(`Category Deletion Error! ${err}`);
+        console.log(`Category deletion error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -94,7 +94,7 @@ export const updateCategory = async (req, res) => {
         if (!category) {
             return res.status(404).json({
                 success: false,
-                message: 'Category Not Found!'
+                message: 'Category not found!'
             });
         }
 
@@ -109,7 +109,7 @@ export const updateCategory = async (req, res) => {
             if (duplicateCheck) {
                 return res.status(400).json({
                     success: false,
-                    message: 'A category with this name already exists!'
+                    message: 'Category name already exists!'
                 });
             }
         }
@@ -122,15 +122,15 @@ export const updateCategory = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Category Updated!',
+            message: 'Category updated successfully!',
             category: updatedCategory
         });
 
     } catch (err) {
-        console.error(`Category Updation Error! ${err}`);
+        console.log(`Category updating Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -142,13 +142,13 @@ export const getAllCategories = async (req, res) => {
         if (categories.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: 'Categories not found!'
+                message: 'No categories found!'
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Categories fetched!',
+            message: 'Categories retrieved successfully!',
             count: categories.length,
             categories
         });
@@ -157,7 +157,7 @@ export const getAllCategories = async (req, res) => {
         console.error(`Get All Categories Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }

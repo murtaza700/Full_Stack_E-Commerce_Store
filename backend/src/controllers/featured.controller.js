@@ -8,7 +8,7 @@ export const toggleFeatured = async (req, res) => {
         if (!product) {
             return res.status(400).json({
                 success: false,
-                message: 'Product ID required!'
+                message: 'Product is required!'
             });
         }
 
@@ -27,7 +27,7 @@ export const toggleFeatured = async (req, res) => {
             await isProductExistInFeatured.deleteOne();
             return res.status(200).json({
                 success: true,
-                message: 'Product removed from featured!'
+                message: 'Removed from featured successfully!'
             });
         }
 
@@ -40,7 +40,7 @@ export const toggleFeatured = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'Product added to featured!',
+            message: 'Added to featured successfully!',
             newFeatured
         });
 
@@ -48,7 +48,7 @@ export const toggleFeatured = async (req, res) => {
         console.error(`Create Featured Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -64,7 +64,7 @@ export const getAllFeatured = async (req, res) => {
         if (!allFeatureds || allFeatureds.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'Nothin in featured!',
+                message: 'No featured products found!',
                 count: 0,
                 featured: []
             });
@@ -72,7 +72,7 @@ export const getAllFeatured = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Featured found!',
+            message: 'Featured products retrieved!',
             count: allFeatureds.length,
             featured: allFeatureds
         });
@@ -81,7 +81,7 @@ export const getAllFeatured = async (req, res) => {
         console.error(`Get All Featured Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }

@@ -6,12 +6,18 @@ export const addToCart = async (req, res) => {
         const { item, quantity, isFromDetails } = req.body;
 
         if (!item) {
-            return res.status(400).json({ success: false, message: 'Item parameter token required!' });
+            return res.status(400).json({
+                success: false,
+                message: 'Product is required!'
+            });
         }
 
         const isItemExist = await Product.findById(item);
         if (!isItemExist) {
-            return res.status(404).json({ success: false, message: 'Luxury fragrance not found in inventory stock vault.' });
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found!'
+            });
         }
 
         const purchaseQuantity = Number(quantity) || 1;
@@ -30,7 +36,7 @@ export const addToCart = async (req, res) => {
 
                 return res.status(200).json({
                     success: true,
-                    message: 'Shopping bag quantity updated successfully!',
+                    message: 'Shopping bag quantity updated!',
                     cart: populatedItem,
                     isUpdated: true
                 });
@@ -39,7 +45,7 @@ export const addToCart = async (req, res) => {
             return res.status(200).json({
                 success: false,
                 isDuplicate: true,
-                message: 'This luxury fragrance is already present inside your shopping bag!'
+                message: 'This item is already in your shopping bag!'
             });
         }
 
@@ -57,13 +63,16 @@ export const addToCart = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'Product successfully added to your luxury shopping bag!',
+            message: 'Added to your shopping bag!',
             cart: populatedNewItem
         });
 
     } catch (err) {
         console.error(`Add To Cart Error! ${err}`);
-        return res.status(500).json({ success: false, message: 'Server Error!' });
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong. Please try again!'
+        });
     }
 }
 
@@ -79,7 +88,7 @@ export const getMyCart = async (req, res) => {
         if (!allCarts || allCarts.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'Nothing in cart!',
+                message: 'Your shopping bag is empty!',
                 count: 0,
                 allCarts: []
             });
@@ -87,7 +96,7 @@ export const getMyCart = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Cart items found!',
+            message: 'Shopping bag items retrieved!',
             count: allCarts.length,
             allCarts
         });
@@ -96,7 +105,7 @@ export const getMyCart = async (req, res) => {
         console.error(`Get My All Cart Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -118,7 +127,7 @@ export const updateCartQuantity = async (req, res) => {
         if (isNaN(parseQuantity) || parseQuantity < 1) {
             return res.status(400).json({
                 success: false,
-                message: 'Quantity must be a valid number greater than 0!'
+                message: 'Invalid quantity value!'
             });
         }
 
@@ -127,14 +136,14 @@ export const updateCartQuantity = async (req, res) => {
         if (!cartItem) {
             return res.status(404).json({
                 success: false,
-                message: 'Cart item not found!'
+                message: 'Item not found in shopping bag!'
             });
         }
 
         if (cartItem.user.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,
-                message: 'Not authorized to update this cart item!'
+                message: 'Access denied!'
             });
         }
 
@@ -149,7 +158,7 @@ export const updateCartQuantity = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Quantity updated successfully!',
+            message: 'Quantity updated!',
             cart: fullyPopulatedCartRecord
         });
 
@@ -159,13 +168,13 @@ export const updateCartQuantity = async (req, res) => {
         if (err.kind === 'ObjectId') {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid Cart ID format!'
+                message: 'Invalid request parameters!'
             });
         }
 
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -177,14 +186,14 @@ export const removeFromCart = async (req, res) => {
         if (!item) {
             return res.status(404).json({
                 success: false,
-                message: 'Item not found!'
+                message: 'Product not found!'
             });
         }
 
         if (req.user.id !== item.user.toString()) {
             return res.status(403).json({
                 success: false,
-                message: 'You can not remove this item!'
+                message: 'Access denied!'
             });
         }
 
@@ -192,19 +201,22 @@ export const removeFromCart = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Item removed!'
+            message: 'Item removed from shopping bag!'
         });
 
     } catch (err) {
         console.error(`Remove From Cart Error! ${err}`);
 
         if (err.kind === 'ObjectId') {
-            return res.status(400).json({ success: false, message: 'Invalid ID format!' });
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request!'
+            });
         }
 
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -216,20 +228,20 @@ export const removeAllFromCart = async (req, res) => {
         if (deleteResult.deletedCount === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'Your cart is already empty!'
+                message: 'Your shopping bag is already empty!'
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'All cart items removed successfully!'
+            message: 'Shopping bag cleared successfully!'
         });
 
     } catch (err) {
         console.error(`Remove All From Cart Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }

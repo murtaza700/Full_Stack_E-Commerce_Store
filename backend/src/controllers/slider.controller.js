@@ -7,9 +7,17 @@ export const getAllSliders = async (req, res) => {
     try {
         const structuralSlidersList = await Slider.find({}).sort({ orderPosition: 1, createdAt: -1 });
 
+        if (structuralSlidersList.length === 0 || !structuralSlidersList) {
+            return res.status(200).json({
+                success: true,
+                message: 'No sliders found!',
+                sliders: []
+            })
+        }
+
         return res.status(200).json({
             success: true,
-            message: 'Sliders found!',
+            message: 'Sliders retrieved successfully!',
             sliders: structuralSlidersList
         })
 
@@ -17,7 +25,7 @@ export const getAllSliders = async (req, res) => {
         console.log(`Get all sliders Error! `, err);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         })
     }
 }
@@ -37,7 +45,7 @@ export const createSliderAdmin = async (req, res) => {
         if (!file) {
             return res.status(400).json({
                 success: false,
-                message: 'Background Image is required!'
+                message: 'Background image is required!'
             })
         }
 
@@ -58,7 +66,7 @@ export const createSliderAdmin = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'Slider Created!',
+            message: 'Slider created successfully!',
             slider: newSlider
         });
 
@@ -66,7 +74,7 @@ export const createSliderAdmin = async (req, res) => {
         console.log(`Create Slider Error! `, err);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         })
     }
 }
@@ -104,7 +112,7 @@ export const updateSliderAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Slider updated!',
+            message: 'Slider updated successfully!',
             slider: updateSlider
         })
 
@@ -112,7 +120,7 @@ export const updateSliderAdmin = async (req, res) => {
         console.log(`Error while updting slider! `, err)
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         })
     }
 }
@@ -124,7 +132,7 @@ export const deleteSliderAdmin = async (req, res) => {
         if (!slider) {
             return res.status(404).json({
                 success: false,
-                message: 'Target profile reference manifest not found'
+                message: 'Slider not found!'
             });
         }
 
@@ -136,14 +144,14 @@ export const deleteSliderAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Slider deleted!'
+            message: 'Slider deleted successfully!'
         });
 
     } catch (err) {
         console.log(`Error while deleting slider! `, err)
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         })
     }
 }

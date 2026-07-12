@@ -22,7 +22,7 @@ export const createProduct = async (req, res) => {
         if (!file) {
             return res.status(401).json({
                 success: false,
-                message: 'Product Image is required!'
+                message: 'Product image is required!'
             });
         }
 
@@ -30,7 +30,7 @@ export const createProduct = async (req, res) => {
         if (!cleanDescription) {
             return res.status(400).json({
                 success: false,
-                message: 'Description is Required!'
+                message: 'Description is required!'
             });
         }
 
@@ -54,15 +54,15 @@ export const createProduct = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'Product Created!',
+            message: 'Product created successfully!',
             product: newProduct
         });
 
     } catch (err) {
-        console.error(`Create Product WebP Fix Error: ${err}`);
+        console.log(`Product Creation error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!!!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -110,15 +110,15 @@ export const updateProduct = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Product updated with optimized WebP asset metrics!',
+            message: 'Product updated successfully!',
             product
         });
 
     } catch (err) {
-        console.error(`Update Product WebP Fix Corridor Error: ${err}`);
+        console.log(`Update product error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server terminal endpoint processing conflict.'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -132,7 +132,7 @@ export const deleteProduct = async (req, res) => {
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: 'Product Not found!'
+                message: 'Product not found!'
             });
         }
 
@@ -144,14 +144,14 @@ export const deleteProduct = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Product Deleted!'
+            message: 'Product deleted successfully!'
         });
 
     } catch (err) {
-        console.error(`Product Delete Error!: ${err}`);
+        console.log(`Product deletion error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -180,7 +180,7 @@ export const getAllProducts = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Products fetched!',
+            message: 'Products retrieved successfully!',
             meta: {
                 totalProducts,
                 totalPages,
@@ -192,10 +192,10 @@ export const getAllProducts = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(`Get All Product Error! ${err}`);
+        console.log(`Get all products error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         })
     }
 }
@@ -213,70 +213,19 @@ export const getSingleProduct = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Product Found!',
+            message: 'Product retrieved successfully!',
             product
         });
 
     } catch (err) {
-        console.error(err);
+        console.error(`Get single product error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 
 }
-
-// export const getProductsByCategory = async (req, res) => {
-//     try {
-
-//         const page = Number(req.query.page) || 1;
-//         const limit = Number(req.query.limit) || 10;
-//         const sort = req.query.sort || '-createdAt';
-//         const skip = (page - 1) * limit;
-
-//         let sortOption = '-createdAt';
-//         if (sort === 'price_low') sortOption = 'price';
-//         if (sort === 'price_high') sortOption = '-price';
-
-//         const queryFilter = { category: req.params.category };
-
-//         const totalProducts = await Product.countDocuments(queryFilter);
-
-//         const products = await Product.find(queryFilter)
-//             .populate('category', '-_id -createdAt -updatedAt -createdBy')
-//             .sort(sortOption)
-//             .skip(skip)
-//             .limit(limit);
-
-//         if (products.length === 0) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'No products found for this category!'
-//             });
-//         }
-
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Products found!',
-//             meta: {
-//                 totalProducts,
-//                 totalPages: Math.ceil(totalProducts / limit),
-//                 currentPage: page,
-//                 limit
-//             },
-//             count: products.length,
-//             products
-//         });
-
-//     } catch (err) {
-//         console.error(err);
-//         return res.status(500).json({
-//             success: false,
-//             message: "Server Error!"
-//         });
-//     }
-// }
 
 export const searchAndFilterProducts = async (req, res) => {
     try {
@@ -330,8 +279,13 @@ export const searchAndFilterProducts = async (req, res) => {
         if (!products || products.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'Products empty state.',
-                meta: { totalProducts: 0, totalPages: 0, currentPage: pageNumber, limit: limitNumber },
+                message: 'No products found matching filters!',
+                meta: {
+                    totalProducts: 0,
+                    totalPages: 0,
+                    currentPage: pageNumber,
+                    limit: limitNumber
+                },
                 count: 0,
                 products: []
             });
@@ -339,15 +293,22 @@ export const searchAndFilterProducts = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Products found!',
-            meta: { totalProducts, totalPages: Math.ceil(totalProducts / limitNumber), currentPage: pageNumber, limit: limitNumber },
+            message: 'Products retrieved successfully!',
+            meta: {
+                totalProducts,
+                totalPages: Math.ceil(totalProducts / limitNumber),
+                currentPage: pageNumber, limit: limitNumber
+            },
             count: products.length,
             products
         });
 
     } catch (err) {
-        console.error(`Product Search Error! ${err}`);
-        return res.status(500).json({ success: false, message: 'Server Error!' });
+        console.log(`Search and filter products error! ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong. Please try again!'
+        });
     }
 }
 
@@ -395,16 +356,16 @@ export const createProductReview = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: alreadyReviewed ? 'Review updated!' : 'Review added!',
+            message: alreadyReviewed ? 'Review updated successfully!' : 'Review added successfully!',
             ratings: product.ratings,
             numReviews: product.numReviews
         });
 
     } catch (err) {
-        console.error(`Review Error: ${err}`);
+        console.log(`Create product review error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 };

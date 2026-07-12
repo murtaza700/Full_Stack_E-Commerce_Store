@@ -6,7 +6,10 @@ export const createOrder = async (req, res) => {
         const { orderItems, address, city, postalCode, phone, email, paymentMethod, transactionId } = req.body;
 
         if (!orderItems || orderItems.length === 0) {
-            return res.status(400).json({ success: false, message: 'No order items found!' });
+            return res.status(400).json({
+                success: false,
+                message: 'No order items found!'
+            });
         }
 
         let itemsPrice = 0;
@@ -15,7 +18,10 @@ export const createOrder = async (req, res) => {
         for (const item of orderItems) {
             const dbProduct = await Product.findById(item.item);
             if (!dbProduct) {
-                return res.status(404).json({ success: false, message: `Product not found with id: ${item.item}` });
+                return res.status(404).json({
+                    success: false,
+                    message: `One or more products in your cart could not be found!`
+                });
             }
             const itemTotalPrice = dbProduct.price * item.quantity;
             itemsPrice += itemTotalPrice;
@@ -55,14 +61,17 @@ export const createOrder = async (req, res) => {
         return res.status(201).json({
             success: true,
             message: simulatedCardTrigger
-                ? 'Simulated Card Invoice Verified! Order logged to system registries.'
-                : 'Order committed to processing pipeline! Cash due upon delivery.',
+                ? 'Payment successful. Order placed!'
+                : 'Order placed successfully. Cash due on delivery!',
             order: savedOrder
         });
 
     } catch (err) {
         console.error(`Order Creating Error! ${err}`);
-        return res.status(500).json({ success: false, message: 'Server Error!' });
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong. Please try again!'
+        });
     }
 }
 
@@ -77,15 +86,15 @@ export const getMyAllOrders = async (req, res) => {
 
         if (!orders || orders.length === 0) {
             return res.status(200).json({
-                success: false,
-                message: 'You have not placed any orders yet.',
+                success: true,
+                message: 'You have not placed any orders yet!',
                 orders: []
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Orders found!',
+            message: 'Orders retrieved successfully!',
             count: orders.length,
             orders
         });
@@ -94,7 +103,7 @@ export const getMyAllOrders = async (req, res) => {
         console.error(`Get My Orders Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -117,13 +126,13 @@ export const getMySingleOrder = async (req, res) => {
         if (order.user.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,
-                message: 'Not authorized to view this order!'
+                message: 'Access denied!'
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Order found!',
+            message: 'Order retrieved successfully!',
             order
         });
 
@@ -133,13 +142,13 @@ export const getMySingleOrder = async (req, res) => {
         if (err.kind === 'ObjectId') {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid Order ID format!'
+                message: 'Invalid order request!'
             });
         }
 
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -160,7 +169,7 @@ export const updateOrderStatusAdmin = async (req, res) => {
         if (order.orderStatus === 'Delivered') {
             return res.status(400).json({
                 success: false,
-                message: 'You have already delivered this order!'
+                message: 'This order is already marked as delivered!'
             });
         }
 
@@ -174,7 +183,7 @@ export const updateOrderStatusAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: `Order status updated to ${status} successfully!`,
+            message: `Order status updated to ${status}!`,
             updatedOrder
         });
 
@@ -182,7 +191,7 @@ export const updateOrderStatusAdmin = async (req, res) => {
         console.error(`Update Order Status Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -238,7 +247,7 @@ export const getAllOrdersAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'All system admin orders filtered and fetched successfully!',
+            message: 'Orders retrieved successfully!',
             count: totalMatchingDocumentsInDb,
             totalRevenue: Number(totalAmountEarnedAcrossQuery.toFixed(2)),
             meta: {
@@ -254,7 +263,7 @@ export const getAllOrdersAdmin = async (req, res) => {
         console.error(`GetALlOrdersAdmin Filters Repaired Error! ${err}`);
         return res.status(500).json({
             success: false,
-            message: 'Server processing corridor exception error.'
+            message: 'Something went wrong. Please try again!'
         });
     }
 };
@@ -273,13 +282,13 @@ export const getOrderDetailsAdmin = async (req, res) => {
         if (!singleOrderMatchNode) {
             return res.status(404).json({
                 success: false,
-                message: 'Targeted invoice manifest reference profile not found inside database indices bounds.'
+                message: 'Order not found!'
             });
         }
 
         return res.status(200).json({
             success: true,
-            message: 'Target administration acquisition document resolved successfully!',
+            message: 'Order details retrieved successfully!',
             order: singleOrderMatchNode
         });
 
@@ -289,13 +298,13 @@ export const getOrderDetailsAdmin = async (req, res) => {
         if (err.kind === 'ObjectId') {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid Mongoose hexadecimal identification token format criteria.'
+                message: 'Invalid order request!'
             });
         }
 
         return res.status(500).json({
             success: false,
-            message: 'Internal server terminal endpoint data acquisition matrix exception.'
+            message: 'Something went wrong. Please try again!'
         });
     }
 };
@@ -316,14 +325,14 @@ export const deleteOrderAdmin = async (req, res) => {
             if (order.user.toString() !== req.user.id) {
                 return res.status(403).json({
                     success: false,
-                    message: 'Not authorized to delete this order!'
+                    message: 'Access denied!'
                 });
             }
 
             if (order.orderStatus !== 'Pending' && order.orderStatus !== 'Cancelled') {
                 return res.status(400).json({
                     success: false,
-                    message: `Cannot cancel order! It is already ${order.orderStatus}.`
+                    message: `Cannot cancel order since it is already ${order.orderStatus.toLowerCase()}!`
                 });
             }
 
@@ -333,7 +342,7 @@ export const deleteOrderAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Order Deleted!'
+            message: 'Order deleted successfully!'
         });
 
     } catch (err) {
@@ -342,13 +351,13 @@ export const deleteOrderAdmin = async (req, res) => {
         if (err.kind === 'ObjectId') {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid Order ID format!'
+                message: 'Invalid order request!'
             });
         }
 
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }

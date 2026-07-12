@@ -33,9 +33,9 @@ app.use('/api/v1/users', adminUsersRoutes);
 app.use('/api/v1/sliders', sliderRoutes);
 
 app.get('/', (req, res) => {
-    res.json({
+    return res.status(200).json({
         success: true,
-        message: 'Api is Runing!'
+        message: 'Scentsô API is running.'
     });
 });
 

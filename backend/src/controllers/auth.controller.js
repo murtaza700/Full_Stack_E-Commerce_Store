@@ -19,7 +19,7 @@ export const signup = async (req, res) => {
         if (isUserRepeated) {
             return res.status(409).json({
                 success: false,
-                message: 'User alreay registered!'
+                message: 'Email already registered!'
             });
         }
 
@@ -45,7 +45,7 @@ export const signup = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'User Registered Successfully!',
+            message: 'Account created successfully!',
             user: {
                 id: newUser._id,
                 name: newUser.fullName,
@@ -54,10 +54,10 @@ export const signup = async (req, res) => {
             }
         });
     } catch (err) {
+        console.log(`Signup error! ${err}`)
         res.status(500).json({
             success: false,
-            message: 'Server Error!',
-            error: err.message
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -102,7 +102,7 @@ export const login = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'User Logged In Successfully!',
+            message: 'Logged In Successfully!',
             user: {
                 id: user._id,
                 name: user.fullName,
@@ -111,10 +111,10 @@ export const login = async (req, res) => {
             }
         });
     } catch (err) {
+        console.log(`Login error! ${err}`)
         return res.status(500).json({
             success: false,
-            message: 'Server Error!',
-            error: err.message
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -133,10 +133,10 @@ export const logout = async (req, res) => {
             message: 'Logged out successfully!'
         });
     } catch (err) {
+        console.log(`Logout error! ${err}`)
         return res.status(500).json({
             success: false,
-            message: 'Server Error!',
-            error: err.message
+            message: 'Something went wrong. Please try again!'
         });
     }
 }
@@ -148,7 +148,7 @@ export const getme = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: 'User not found!'
+                message: 'Account not found!'
             });
         }
 
@@ -157,10 +157,10 @@ export const getme = async (req, res) => {
             user
         });
     } catch (err) {
+        console.log(`Get me error! ${err}`)
         return res.status(500).json({
             success: false,
-            message: 'Server Error!',
-            error: err.message
+            message: 'Something went wrong. Please try again!'
         });
     }
 }

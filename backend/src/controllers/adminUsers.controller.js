@@ -26,6 +26,7 @@ export const getAllUsersAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            message: 'Users retrieved successfully.',
             count: filteredRegisteredUsers.length,
             users: filteredRegisteredUsers
         });
@@ -34,7 +35,7 @@ export const getAllUsersAdmin = async (req, res) => {
         console.error("Backend Error inside filtered getAllUsersAdmin:", serverError);
         return res.status(500).json({
             success: false,
-            message: "Internal server data acquisition matrix error. Awaiting node logs triage."
+            message: "Something went wrong. Please try again!"
         });
     }
 };
@@ -47,14 +48,14 @@ export const deleteUserAccountAdmin = async (req, res) => {
         if (!userAccountMatchNode) {
             return res.status(404).json({
                 success: false,
-                message: "Targeted profile profile reference not found inside database indices bounds."
+                message: "Account not found!"
             });
         }
 
-        if (req.user && req.user._id.toString() === targetUserIdToken.toString()) {
+        if (req.user && req.user.id.toString() === targetUserIdToken.toString()) {
             return res.status(400).json({
                 success: false,
-                message: "Administrative protocol breach: Self-destruction of active session token is disallowed."
+                message: "You cannot delete your own account!"
             });
         }
 
@@ -62,13 +63,13 @@ export const deleteUserAccountAdmin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Client identity credentials record wiped off database registries successfully!"
+            message: "Account deleted successfully!"
         });
     } catch (serverError) {
         console.error("Backend Error inside deleteUserAccountAdmin:", serverError);
         return res.status(500).json({
             success: false,
-            message: "Internal terminal endpoint processing conflict. Please check console clusters definitions."
+            message: "Something went wrong. Please try again!"
         });
     }
 };
