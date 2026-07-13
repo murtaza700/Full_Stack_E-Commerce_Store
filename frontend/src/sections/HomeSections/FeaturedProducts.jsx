@@ -64,7 +64,7 @@ const FeaturedProducts = () => {
 
     const handleWishlistClick = (productId) => {
         if (!isAuthenticated) {
-            showErrorToast('Authentication requested to synchronize personal boutique wishlist items.');
+            showErrorToast('Please login first!');
             return;
         }
         dispatch(toggleWishlistAction(productId));
@@ -72,7 +72,7 @@ const FeaturedProducts = () => {
 
     const handleCartClick = (productId) => {
         if (!isAuthenticated) {
-            showErrorToast('Please login to activate and initialize your luxury shopping bag checkout profile.');
+            showErrorToast('Please login first!');
             return;
         }
         dispatch(addToCart(productId));

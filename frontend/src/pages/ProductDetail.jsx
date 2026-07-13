@@ -222,7 +222,7 @@ const ProductDetails = () => {
                                     type="button"
                                     onClick={() => {
                                         if (!isAuthenticated) {
-                                            showErrorToast('Please login to activate and load your premium luxury shopping bag.');
+                                            showErrorToast('Please login first!');
                                             return;
                                         }
 
@@ -245,7 +245,7 @@ const ProductDetails = () => {
                                     type="button"
                                     onClick={() => {
                                         if (!isAuthenticated) {
-                                            showErrorToast('Authentication requested to synchronize personal boutique wishlist items.');
+                                            showErrorToast('Please login first!');
                                             return;
                                         }
                                         dispatch(toggleWishlistAction(product._id));
