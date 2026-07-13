@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
 
 import authRoutes from './routes/auth.routes.js';
 import productRoutes from './routes/product.routes.js';
@@ -14,6 +16,30 @@ import sliderRoutes from './routes/slider.routes.js';
 
 const app = express();
 
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 20,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Too many authentication attempts. Please try again in 15 minutes.'
+    }
+});
+
+const transactionLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 50,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Request threshold reached. Processing paused for 15 minutes.'
+    }
+});
+
+app.use(helmet());
+
 app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true
@@ -22,11 +48,11 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
-app.use('/api/v1/orders', orderRoutes);
-app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/orders', transactionLimiter, orderRoutes);
+app.use('/api/v1/cart', transactionLimiter, cartRoutes);
 app.use('/api/v1/wishlist', wishlistRoutes);
 app.use('/api/v1/featured', featuredRoutes);
 app.use('/api/v1/users', adminUsersRoutes);

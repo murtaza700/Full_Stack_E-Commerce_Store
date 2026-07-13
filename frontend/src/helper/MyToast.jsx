@@ -22,6 +22,8 @@ export const showErrorToast = (message) => {
             fontFamily: 'Poppins',
             fontSize: '13px',
             borderRadius: '8px',
+            background: '#111111',
+            color: '#ffffff',
         }
     });
 };
