@@ -8,7 +8,7 @@ export const fetchAllUsersAdmin = createAsyncThunk(
             const serverResponse = await api.get(`/users?search=${search}&sort=${sort}`);
             return serverResponse.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || "Platform users acquisition cluster route error.");
+            return thunkAPI.rejectWithValue(err.response?.data?.message || "Something went wrong. Please try again!");
         }
     }
 );
@@ -20,7 +20,7 @@ export const deleteUserAccountAdmin = createAsyncThunk(
             const serverResponse = await api.delete(`/users/${targetClientHexId}`);
             return { targetClientHexId, data: serverResponse.data };
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || "Client profile deletion corridor execution failure.");
+            return thunkAPI.rejectWithValue(err.response?.data?.message || "Something went wrong. Please try again!");
         }
     }
 );

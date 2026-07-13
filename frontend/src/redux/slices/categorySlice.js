@@ -11,7 +11,7 @@ export const getAllCategories = createAsyncThunk(
             console.error('Get all Categories error!', err);
 
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Get all Categories error!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -27,7 +27,7 @@ export const createCategory = createAsyncThunk(
             console.error('Error While Creating Category! ', err);
 
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Error While Creating Category!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -43,7 +43,7 @@ export const updateCategory = createAsyncThunk(
             console.error('Error While Updating Category! ', err);
 
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Error While Updating Category!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -59,7 +59,7 @@ export const deleteCategory = createAsyncThunk(
             console.error('Error While Deleting Category! ', err);
 
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Error While Deleting Category!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }

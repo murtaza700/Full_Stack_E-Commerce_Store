@@ -8,7 +8,7 @@ export const getMyWishlist = createAsyncThunk(
             const res = await api.get('/wishlist');
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Get Wishlist Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -20,7 +20,7 @@ export const toggleWishlistAction = createAsyncThunk(
             const res = await api.post('/wishlist/toggle', { item: id });
             return { ...res.data, productId: id };
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Toggle Wishlist Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -32,7 +32,7 @@ export const clearWishlist = createAsyncThunk(
             const res = await api.delete('/wishlist/clear-all');
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Clear Wishlist Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );

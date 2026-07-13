@@ -12,7 +12,7 @@ const authMiddleware = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Please Login First!'
+                message: 'Please login first!'
             });
         }
 
@@ -21,7 +21,7 @@ const authMiddleware = async (req, res, next) => {
         if (!decoded) {
             return res.status(401).json({
                 success: false,
-                message: 'Unauthorized access: Invalid token signature!'
+                message: 'Invalid credentials!'
             });
         }
 
@@ -30,7 +30,7 @@ const authMiddleware = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: 'Authentication failed: User no longer exists!'
+                message: 'Account not found!!'
             });
         }
 
@@ -41,13 +41,13 @@ const authMiddleware = async (req, res, next) => {
         if (err.name === 'TokenExpiredError') {
             return res.status(401).json({
                 success: false,
-                message: 'Session expired: Please log in again!'
+                message: 'Session expired. Please log in again!'
             });
         }
 
         return res.status(500).json({
             success: false,
-            message: 'Internal server security validation error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 

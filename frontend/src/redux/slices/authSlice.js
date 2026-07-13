@@ -9,7 +9,7 @@ export const signupUser = createAsyncThunk(
             return res.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || "Signup Error!"
+                err.response?.data?.message || "Something went wrong. Please try again!"
             );
         }
     }
@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
             return res.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || "Login Error!"
+                err.response?.data?.message || "Something went wrong. Please try again!"
             );
         }
     }
@@ -37,7 +37,7 @@ export const loadUser = createAsyncThunk(
             return res.data;
         } catch (err) {
             return thunkAPI.rejectWithValue({
-                message: err.response?.data?.message || "You are not logged in!",
+                message: err.response?.data?.message || "Please log in first!",
                 status: err.response?.status
             });
         }
@@ -52,7 +52,7 @@ export const logoutUser = createAsyncThunk(
             return res.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || "Logout Error!"
+                err.response?.data?.message || "Something went wrong. Please try again!"
             );
         }
     }
@@ -142,7 +142,7 @@ const authSlice = createSlice({
                 if (action.payload?.status === 401) {
                     state.error = null;
                 } else {
-                    state.error = action.payload?.message || "Server connection lost!";
+                    state.error = action.payload?.message;
                 }
             })
 

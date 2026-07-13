@@ -10,7 +10,7 @@ export const createProduct = createAsyncThunk(
         } catch (err) {
             console.error('Create Product Error!', err);
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Product Publish Error!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -27,27 +27,11 @@ export const getAllProducts = createAsyncThunk(
         } catch (err) {
             console.error('Get All Products Error!', err);
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Products Fetching Error!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
 );
-
-
-// export const getAllProducts = createAsyncThunk(
-//     'products/getAllProducts',
-//     async ({ page = 1, limit = 10 } = {}, thunkAPI) => {
-//         try {
-//             const res = await api.get(`/products?page=${page}&limit=${limit}`);
-//             return res.data;
-//         } catch (err) {
-//             console.error('Get All Products Error!', err);
-//             return thunkAPI.rejectWithValue(
-//                 err.response?.data?.message || 'Products Fetching Error!'
-//             );
-//         }
-//     }
-// );
 
 export const getSingleProduct = createAsyncThunk(
     'products/getSingleProduct',
@@ -58,7 +42,7 @@ export const getSingleProduct = createAsyncThunk(
         } catch (err) {
             console.error('Single Product Fetch Error!', err);
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Single Product Fetch Error!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -73,7 +57,7 @@ export const deleteProduct = createAsyncThunk(
         } catch (err) {
             console.error('Delete Product Error!', err);
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Delete Product Error!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -88,7 +72,7 @@ export const updateProduct = createAsyncThunk(
         } catch (err) {
             console.error('Update Product Error!', err);
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Update Product Error!'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }

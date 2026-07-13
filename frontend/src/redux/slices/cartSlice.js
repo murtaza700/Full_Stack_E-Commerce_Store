@@ -8,7 +8,7 @@ export const getAllMyCarts = createAsyncThunk(
             const res = await api.get('/cart');
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Get All Carts Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -20,7 +20,7 @@ export const addToCart = createAsyncThunk(
             const res = await api.post('/cart', { item: id, quantity, isFromDetails });
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Add to Cart Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -32,7 +32,7 @@ export const deleteSingleCart = createAsyncThunk(
             const res = await api.delete(`/cart/${id}`);
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Error while removing from cart!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -44,7 +44,7 @@ export const updateCartQuantity = createAsyncThunk(
             const res = await api.patch(`/cart/${id}`, { quantity });
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Update Cart Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -56,7 +56,7 @@ export const clearAllCart = createAsyncThunk(
             const res = await api.delete('/cart/clear-all');
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Clear Cart Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -181,7 +181,7 @@ const cartSlice = createSlice({
                 const cartId = action.meta.arg;
                 state.btnLoading[cartId] = false;
                 state.loading.mutation = false;
-                state.messages.mutation = action.payload.message || 'Item removed from shopping bag.';
+                state.messages.mutation = action.payload.message || 'Product removed from shopping bag!';
                 state.cartItems = state.cartItems.filter(item => item._id !== cartId);
                 calculateCartTotals(state);
             })
@@ -241,7 +241,7 @@ const cartSlice = createSlice({
             .addCase(clearAllCart.fulfilled, (state, action) => {
                 state.loading.mutation = false;
                 state.cartItems = [];
-                state.messages.mutation = action.payload.message || 'Your shopping bag has been cleared.';
+                state.messages.mutation = action.payload.message || 'Your shopping bag has been cleared!';
                 calculateCartTotals(state);
             })
             .addCase(clearAllCart.rejected, (state, action) => {

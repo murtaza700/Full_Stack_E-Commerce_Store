@@ -7,13 +7,13 @@ const roleChecker = (req, res, next) => {
         } else {
             return res.status(401).json({
                 success: false,
-                message: 'This is for Admin!'
+                message: 'Access denied!'
             });
         }
     } catch (err) {
         return res.status(500).json({
             success: false,
-            message: 'Server Error!'
+            message: 'Something went wrong. Please try again!'
         });
     }
 }

@@ -8,7 +8,7 @@ export const getFeaturedProducts = createAsyncThunk(
             const res = await api.get('/featured');
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Get Featured Products Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );
@@ -20,7 +20,7 @@ export const toggleFeaturedProduct = createAsyncThunk(
             const res = await api.post(`/featured/toggle`, { product: id });
             return { ...res.data, productId: id };
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Server Error!');
+            return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong. Please try again!');
         }
     }
 );

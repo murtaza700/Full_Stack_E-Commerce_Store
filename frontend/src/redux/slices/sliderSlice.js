@@ -9,7 +9,7 @@ export const fetchAllSliders = createAsyncThunk(
             const res = await api.get('/sliders')
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'All slides fetching Error!')
+            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'Something went wrong. Please try again!')
         }
     }
 )
@@ -23,7 +23,7 @@ export const createSlider = createAsyncThunk(
             })
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'Error While creating slider!')
+            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'Something went wrong. Please try again!')
         }
     }
 )
@@ -37,7 +37,7 @@ export const updateSlider = createAsyncThunk(
             })
             return res.data;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'Error While updating slider!')
+            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'Something went wrong. Please try again!')
         }
     }
 )
@@ -49,7 +49,7 @@ export const deleteSlider = createAsyncThunk(
             const res = await api.delete(`/sliders/${id}`)
             return { id, data: res.data };
         } catch (err) {
-            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'Error While deleting slider!')
+            return thunkAPI.rejectWithValue(err?.response?.data?.message || 'Something went wrong. Please try again!')
         }
     }
 )
@@ -108,12 +108,12 @@ const sliderSlice = createSlice({
             .addCase(createSlider.fulfilled, (state, action) => {
                 state.loading.mutation = false;
                 state.actionSuccess = true;
-                state.message = action.payload.message || 'Slider banner initialized successfully!'
+                state.message = action.payload.message;
             })
             .addCase(createSlider.rejected, (state, action) => {
                 state.loading.mutation = false;
                 state.actionSuccess = false;
-                state.errors.mutation = action.payload || 'Error While Creating Slider!'
+                state.errors.mutation = action.payload;
             })
 
 
@@ -125,12 +125,12 @@ const sliderSlice = createSlice({
             .addCase(updateSlider.fulfilled, (state, action) => {
                 state.loading.mutation = false;
                 state.actionSuccess = true;
-                state.message = action.payload.message || 'Slider updated successfully!'
+                state.message = action.payload.message;
             })
             .addCase(updateSlider.rejected, (state, action) => {
                 state.loading.mutation = false;
                 state.actionSuccess = false;
-                state.errors.mutation = action.payload || 'Error while updating slider!'
+                state.errors.mutation = action.payload;
             })
 
 
@@ -144,14 +144,14 @@ const sliderSlice = createSlice({
                 const targetId = action.payload.id || action.meta.arg;
                 state.btnLoading[targetId] = false;
                 state.actionSuccess = true;
-                state.message = action.payload.data?.message || 'Slider deleted successfully!';
+                state.message = action.payload.data?.message;
                 state.sliders = state.sliders.filter(slide => slide._id !== targetId);
             })
             .addCase(deleteSlider.rejected, (state, action) => {
                 const targetId = action.meta.arg;
                 state.btnLoading[targetId] = false;
                 state.actionSuccess = false;
-                state.errors.mutation = action.payload ||'Error while deleting slider!';
+                state.errors.mutation = action.payload;
             })
     }
 })

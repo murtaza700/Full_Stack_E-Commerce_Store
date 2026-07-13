@@ -9,7 +9,7 @@ export const createOrder = createAsyncThunk(
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Transaction compilation failed at checkout desk.'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -23,7 +23,7 @@ export const getMyAllOrders = createAsyncThunk(
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Failed to pull personal order history files.'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -37,7 +37,7 @@ export const getMySingleOrder = createAsyncThunk(
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Failed to resolve unique order reference variables.'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -53,7 +53,7 @@ export const getAllOrdersAdmin = createAsyncThunk(
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Failed to capture administrative order database.'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -67,7 +67,7 @@ export const updateOrderStatusAdmin = createAsyncThunk(
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Failed to modify target order status registry.'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -81,7 +81,7 @@ export const deleteOrderAdmin = createAsyncThunk(
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Failed to complete order deletion workflow sequence.'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -95,7 +95,7 @@ export const getOrderDetailsAdminThunk = createAsyncThunk(
             return response.data;
         } catch (err) {
             return thunkAPI.rejectWithValue(
-                err.response?.data?.message || 'Failed to resolve specialized administrative target invoice sheet entries.'
+                err.response?.data?.message || 'Something went wrong. Please try again!'
             );
         }
     }
@@ -145,7 +145,7 @@ const orderSlice = createSlice({
             })
             .addCase(createOrder.fulfilled, (state, action) => {
                 state.loading.mutation = false;
-                state.messages.mutation = action.payload.message || 'Order executed!';
+                state.messages.mutation = action.payload.message;
                 state.currentOrder = action.payload.order || action.payload;
 
                 if (action.payload.order) {
@@ -215,7 +215,7 @@ const orderSlice = createSlice({
                 const { id } = action.meta.arg;
                 state.btnLoading[id] = false;
                 state.loading.mutation = false;
-                state.messages.mutation = action.payload.message || 'Status updated successfully!';
+                state.messages.mutation = action.payload.message;
 
                 const fullyUpdatedOrder = action.payload.updatedOrder;
                 if (fullyUpdatedOrder) {
@@ -248,7 +248,7 @@ const orderSlice = createSlice({
                 const id = action.meta.arg;
                 state.btnLoading[id] = false;
                 state.loading.mutation = false;
-                state.messages.mutation = action.payload.message || 'Order successfully purged from registry records.';
+                state.messages.mutation = action.payload.message;
 
                 state.adminOrders = state.adminOrders.filter(order => order._id !== id);
 
