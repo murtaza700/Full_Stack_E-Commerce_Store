@@ -36,11 +36,13 @@ export const signup = async (req, res) => {
 
         const token = tokenGenerator({ id: newUser._id, role });
 
-        res.cookie('token', token, {
+        const isProduction = process.env.NODE_ENV === "production";
+
+        res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 3600000
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 3600000,
         });
 
         return res.status(201).json({
@@ -91,13 +93,15 @@ export const login = async (req, res) => {
             });
         }
 
-        const token = tokenGenerator({ id: user._id, role: user.role });
+        const token = await tokenGenerator({ id: user._id, role: user.role });
 
-        res.cookie('token', token, {
+        const isProduction = process.env.NODE_ENV === "production";
+
+        res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 3600000
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 3600000,
         });
 
         return res.status(200).json({
@@ -121,11 +125,13 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-        res.cookie('token', '', {
+        const isProduction = process.env.NODE_ENV === "production";
+
+        res.cookie("token", "", {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 0
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 0,
         });
 
         return res.status(200).json({

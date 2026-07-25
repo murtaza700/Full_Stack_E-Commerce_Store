@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loginUser, clearAuthError, clearAuthMessage } from '../redux/slices/authSlice'
 import { showSuccessToast, showErrorToast } from '../helper/MyToast'
 
+import Meta from '../components/Meta'
+
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -39,112 +41,120 @@ const Login = () => {
     }, [error, message, isAuthenticated, dispatch, navigate]);
 
     return (
-        <div className='flex items-center justify-center min-h-screen bg-CARD-BG px-4 select-none'>
+        <>
+            <Meta
+                title="Account Login"
+                description="Sign in to your private Scentsô profile. Access your personalized fragrance collection, secure transaction invoices tracking registers, and active checkout bags."
+                keywords="perfume store login, secure profile access, customer account sign in, artisan fragrance member portal"
+            />
 
-            <div className='bg-white border border-gray-100 w-full max-w-md p-8 md:p-12 shadow-sm rounded-sm transition-all duration-300'>
+            <div className='flex items-center justify-center min-h-screen bg-CARD-BG px-4 select-none'>
 
-                <div className='text-center mb-10'>
-                    <h1 className='font-bold text-3xl tracking-[4px] text-TEXT uppercase mb-2'>
-                        Scentsô
-                    </h1>
-                    <p className='text-[11px] tracking-[2px] font-light uppercase text-gray-400'>
-                        Sign in to your elite sensory space
-                    </p>
-                </div>
+                <div className='bg-white border border-gray-100 w-full max-w-md p-8 md:p-12 shadow-sm rounded-sm transition-all duration-300'>
 
-                <form onSubmit={handleSubmit(loginSubmit)} className='space-y-6'>
-
-                    <div className='flex flex-col space-y-2 group'>
-                        <label
-                            className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500'
-                            htmlFor="email"
-                        >
-                            Your Email
-                        </label>
-
-                        <div className='flex items-center w-full border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300'>
-                            <Mail size={16} className='text-gray-400 mr-3' />
-
-                            <input
-                                className='bg-transparent text-sm text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-light'
-                                placeholder='name@example.com'
-                                id='email'
-                                type="email"
-                                {...register('email', {
-                                    required: 'Email address is required'
-                                })}
-                            />
-                        </div>
-
-                        {errors.email && (
-                            <span className='text-[10px] text-red-500 font-light'>
-                                {errors.email.message}
-                            </span>
-                        )}
+                    <div className='text-center mb-10'>
+                        <h1 className='font-bold text-3xl tracking-[4px] text-TEXT uppercase mb-2'>
+                            Scentsô
+                        </h1>
+                        <p className='text-[11px] tracking-[2px] font-light uppercase text-gray-400'>
+                            Sign in to your elite sensory space
+                        </p>
                     </div>
 
-                    <div className='flex flex-col space-y-2'>
-                        <label
-                            className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500'
-                            htmlFor="password"
-                        >
-                            Your Password
-                        </label>
+                    <form onSubmit={handleSubmit(loginSubmit)} className='space-y-6'>
 
-                        <div className='flex items-center w-full border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300'>
-                            <Lock size={16} className='text-gray-400 mr-3' />
-
-                            <input
-                                className='bg-transparent text-sm text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-light'
-                                placeholder='••••••••'
-                                id='password'
-                                type={showPass ? 'text' : 'password'}
-                                {...register('password', {
-                                    required: 'Password is required'
-                                })}
-                            />
-
-                            <button
-                                type="button"
-                                onClick={() => setShowPass(!showPass)}
-                                className='text-gray-400 hover:text-TEXT transition-colors focus:outline-none'
+                        <div className='flex flex-col space-y-2 group'>
+                            <label
+                                className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500'
+                                htmlFor="email"
                             >
-                                {showPass ? (
-                                    <Eye size={16} />
-                                ) : (
-                                    <EyeOff size={16} />
-                                )}
-                            </button>
+                                Your Email
+                            </label>
+
+                            <div className='flex items-center w-full border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300'>
+                                <Mail size={16} className='text-gray-400 mr-3' />
+
+                                <input
+                                    className='bg-transparent text-sm text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-light'
+                                    placeholder='name@example.com'
+                                    id='email'
+                                    type="email"
+                                    {...register('email', {
+                                        required: 'Email address is required'
+                                    })}
+                                />
+                            </div>
+
+                            {errors.email && (
+                                <span className='text-[10px] text-red-500 font-light'>
+                                    {errors.email.message}
+                                </span>
+                            )}
                         </div>
 
-                        {errors.password && (
-                            <span className='text-[10px] text-red-500 font-light'>
-                                {errors.password.message}
-                            </span>
-                        )}
-                    </div>
+                        <div className='flex flex-col space-y-2'>
+                            <label
+                                className='text-[10px] uppercase tracking-[2px] font-medium text-gray-500'
+                                htmlFor="password"
+                            >
+                                Your Password
+                            </label>
 
-                    <button
-                        className='bg-TEXT text-white w-full py-3.5 text-xs uppercase tracking-[2px] font-semibold border border-TEXT hover:bg-transparent hover:text-TEXT active:scale-[0.99] transition-all duration-300 mt-4 rounded-sm shadow-sm flex items-center justify-center disabled:opacity-50'
-                        type='submit'
-                        disabled={loading}
-                    >
-                        {loading ? 'Verifying...' : 'Login'}
-                    </button>
-                </form>
+                            <div className='flex items-center w-full border-b border-gray-200 focus-within:border-TEXT pb-1 transition-colors duration-300'>
+                                <Lock size={16} className='text-gray-400 mr-3' />
 
-                <p className='text-center mt-8 text-xs text-gray-400 font-light'>
-                    Don’t have an account?{' '}
-                    <Link
-                        to={'/signup'}
-                        className='font-medium text-TEXT underline underline-offset-4 hover:text-gray-600 transition-colors'
-                    >
-                        Create now
-                    </Link>
-                </p>
+                                <input
+                                    className='bg-transparent text-sm text-TEXT w-full outline-none focus:outline-none placeholder-gray-300 font-light'
+                                    placeholder='••••••••'
+                                    id='password'
+                                    type={showPass ? 'text' : 'password'}
+                                    {...register('password', {
+                                        required: 'Password is required'
+                                    })}
+                                />
 
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPass(!showPass)}
+                                    className='text-gray-400 hover:text-TEXT transition-colors focus:outline-none'
+                                >
+                                    {showPass ? (
+                                        <Eye size={16} />
+                                    ) : (
+                                        <EyeOff size={16} />
+                                    )}
+                                </button>
+                            </div>
+
+                            {errors.password && (
+                                <span className='text-[10px] text-red-500 font-light'>
+                                    {errors.password.message}
+                                </span>
+                            )}
+                        </div>
+
+                        <button
+                            className='bg-TEXT text-white w-full py-3.5 text-xs uppercase tracking-[2px] font-semibold border border-TEXT hover:bg-transparent hover:text-TEXT active:scale-[0.99] transition-all duration-300 mt-4 rounded-sm shadow-sm flex items-center justify-center disabled:opacity-50'
+                            type='submit'
+                            disabled={loading}
+                        >
+                            {loading ? 'Verifying...' : 'Login'}
+                        </button>
+                    </form>
+
+                    <p className='text-center mt-8 text-xs text-gray-400 font-light'>
+                        Don’t have an account?{' '}
+                        <Link
+                            to={'/signup'}
+                            className='font-medium text-TEXT underline underline-offset-4 hover:text-gray-600 transition-colors'
+                        >
+                            Create now
+                        </Link>
+                    </p>
+
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 
