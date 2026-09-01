@@ -2,7 +2,7 @@
 
 An elite, production-ready Full-Stack E-Commerce platform tailored for high-end boutique fragrances, luxury scents, and custom perfume formulations. This application combines a minimalist, responsive luxury storefront for customers with a highly secure, data-driven administrative workspace room for business management.
 
-### Live Preview : [Live Link](https://scentso-full-stack-e-commerce-store.vercel.app) ✨
+### Live Preview :👉 [Live Link](https://scentso.vercel.app) ✨
 ---
 
 ## 🚀 Key Production Capabilities & System Features
